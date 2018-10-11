@@ -1,0 +1,96 @@
+{
+  "html": [
+    {
+        "type": "audio",
+        "src": "",
+        "content":""
+    },
+    {
+      "type": "area",
+      "id": "image-area",
+      "content": [
+        {
+          "type": "bold",
+          "id": "status-text",
+          "content": "Status Text"
+        },
+        {
+          "type": "break"
+        },
+        {
+            "type": "area",
+            "id": "image-wrapper",
+            "content": [
+                {
+                    "type": "image",
+                    "id": "current-image",
+                    "src": ""
+                },
+                {
+                    "type": "area",
+                    "class": "overlay",
+                    "id": "image-overlay",
+                    "content": [
+                        {
+                            "type": "area",
+                            "class": "overlay",
+                            "id": "overlay-button",
+                            "content": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "area",
+            "id": "replayButton",
+            "content": "&#x1f50a;"
+        }
+      ]
+    },
+    {
+      "type": "area",
+      "id": "status-box"
+    },
+    {
+      "type": "area",
+      "id": "typing-area"
+    }
+  ],
+  "css": {
+    "#image-area": {
+    },
+    "#image-wrapper": {
+        "position": "relative",
+        "display": "inline-block"
+    },
+    "#current-image": {
+        "z-index": "1"
+    },
+    "#image-overlay": {
+        "background-color": "rgba(0,0,0,0.9)",
+        "height": "100%",
+        "width": "100%",
+        "z-index": "2",
+        "position": "absolute",
+        "top": "0px",
+        "left": "0px",
+        "display": "none"
+    },
+    "#overlay-button": {
+        "height": "20px",
+        "width": "20px",
+        "background-color": "rgba(255,0,0,1)",
+        "z-index": "3",
+        "position": "absolute",
+        "top": "calc(50% - 10px)",
+        "left": "calc(50% - 10px)",
+        "border-radius": "50px"
+    },
+    "#replayButton": {
+        "width": "50px",
+        "height": "50px",
+        "display": "none"
+    }
+  }
+}

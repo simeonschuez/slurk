@@ -100,6 +100,11 @@ class Layout:
                                   attributes=[("id", entry.get('id')), ("class", entry.get('class'))],
                                   content=entry.get("content"),
                                   indent=indent)
+            elif entry["type"] == "audio":
+                html += self._tag("audio",
+                                  attributes=attributes,
+                                  content=entry.get("content"),
+                                  indent=indent)
         return html
 
     @staticmethod
