@@ -18,7 +18,7 @@ function emitPosition(a, intrvl) {
         socket.emit('mouseMove', {coordinates: [ mouse.pos, mouse.pos_prev ],element:a, room: self_room, user: users});
         socket.emit('log', {type: "mouse_move",coordinates:{pos:mouse.pos,pos_prev:mouse.pos_prev},element:a,room:self_room});
         mouse.move = false;
-        console.log('mouseMove: ' + mouse.pos.x + ',' + mouse.pos.y)
+        // console.log('mouseMove: ' + mouse.pos.x + ',' + mouse.pos.y)
     }
     mouse.pos_prev = {x: mouse.pos.x, y: mouse.pos.y};
     setTimeout(emitPosition, intrvl);
@@ -68,7 +68,7 @@ trackMovement("#current-image", 50);
 /* send coordinates on click */
 $(trackingArea).click(function(e){
     getPosition(e, trackingArea);
-    console.log('mouseClick: ' + mouse.pos.x + ',' + mouse.pos.y);
+    // console.log('mouseClick: ' + mouse.pos.x + ',' + mouse.pos.y);
     socket.emit('mouseClick', {coordinates: mouse.pos,element:trackingArea, room: self_room});
     socket.emit('log', {type: "mouse_click", coordinates:mouse.pos,element:trackingArea, room: self_room});
 });
