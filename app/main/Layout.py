@@ -200,6 +200,10 @@ class Layout:
                "}\n"
 
     @staticmethod
+    def _document_ready(content: str):
+        return "$(document).ready(function(){" + content + "});"
+
+    @staticmethod
     def _verify(content: str):
         return content.count("{") == content.count("}")
 
@@ -213,6 +217,8 @@ class Layout:
             return self._submit(content)
         if trigger == "print-history":
             return self._history(content)
+        if trigger == "document-ready":
+            return self._document_ready(content)
         print("unknown trigger:", trigger)
         return ""
 
