@@ -2,6 +2,7 @@
   "html": [
     {
         "type": "audio",
+        "id":"audio-player",
         "src": "",
         "content":""
     },
@@ -12,7 +13,7 @@
         {
           "type": "bold",
           "id": "status-text",
-          "content": "Status Text"
+          "content": ""
         },
         {
           "type": "break"
@@ -24,7 +25,7 @@
                 {
                     "type": "image",
                     "id": "current-image",
-                    "src": ""
+                    "src": "https://media3.giphy.com/media/P3bhrBdWCvek8/giphy.gif?cid=3640f6095bc83d5f2f48586e4d1a114e"
                 },
                 {
                     "type": "area",
@@ -94,7 +95,7 @@
     }
   },
   "scripts": {
-    "document-ready": "image-click-functions.js",  
+    "document-ready": "image-click-functions",
     "incoming-message": "display-message",
     "submit-message": "send-message",
     "print-history": "plain-history"

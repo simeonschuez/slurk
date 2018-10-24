@@ -16,9 +16,9 @@ function getPosition (evt, area) {
 function emitPosition(a, intrvl) {
     if (mouse.move && mouse.pos_prev) {
         socket.emit('mouseMove', {coordinates: [ mouse.pos, mouse.pos_prev ],element:a, room: self_room, user: users});
-        socket.emit('log', {type: "mouse_move",coordinates:{pos:mouse.pos,pos_prev:mouse.pos_prev},element:a,room:self_room});
+        socket.emit('log', {type: "mouse_move",coordinates:{pos:mouse.pos,pos_prev:mouse.pos_prev},element:a,room:self_room}); // 
         mouse.move = false;
-        // console.log('mouseMove: ' + mouse.pos.x + ',' + mouse.pos.y)
+         console.log('mouseMove: ' + mouse.pos.x + ',' + mouse.pos.y)
     }
     mouse.pos_prev = {x: mouse.pos.x, y: mouse.pos.y};
     setTimeout(emitPosition, intrvl);
@@ -58,34 +58,34 @@ socket.on('new_image', function(data) {
 
 socket.on('file_path', function(data) {
     if (data.type == 'audio') {
-        $("#audio").attr("src", data.file);
+        $("#audio-player").attr("src", data.file);
     }
 });
 
 // activate mouse tracking
-trackMovement("#current-image", 50);
+trackMovement("#current-image", 200);
 
 /* send coordinates on click */
 $(trackingArea).click(function(e){
     getPosition(e, trackingArea);
-    // console.log('mouseClick: ' + mouse.pos.x + ',' + mouse.pos.y);
+    console.log('mouseClick: ' + mouse.pos.x + ',' + mouse.pos.y);
     socket.emit('mouseClick', {coordinates: mouse.pos,element:trackingArea, room: self_room});
-    socket.emit('log', {type: "mouse_click", coordinates:mouse.pos,element:trackingArea, room: self_room});
+    socket.emit('log', {type: "mouse_click", coordinates:mouse.pos,element:trackingArea, room: self_room}); //
 });
 
 /* if overlay button is clicked: hide overlay and play audio file */
 $('#overlay-button').click(function(e){
-    getPosition(e);
+    getPosition(e, "#overlay-button");
     socket.emit('mouseClick', {coordinates: mouse.pos,element:"#overlay-button", room: self_room});
     socket.emit('log', {type: "mouse_click", coordinates:mouse.pos,element:"#overlay-button", room: self_room});
 
     $(".overlay").hide();
     $("#replayButton").show();
     /* play transmitted audio file after 500 ms */
-    setTimeout(function(){document.getElementById("audio").play(); }, 500);
+    setTimeout(function(){document.getElementById("audio-player").play(); }, 500);
 });
 
 /* play audio if replay button is clicked */
 $("#replayButton").click(function(){
-    document.getElementById('audio').play();
+    document.getElementById("audio-player").play();
 })
