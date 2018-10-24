@@ -23,6 +23,18 @@
             "id": "image-wrapper",
             "content": [
                 {
+                    "type": "area",
+                    "id":"button-wrapper",
+                    "content":[
+                        {
+                            "type": "area",
+                            "class": "overlay",
+                            "id": "overlay-button",
+                            "content":["Continue"]
+                        }
+                    ]
+                },
+                {
                     "type": "image",
                     "id": "current-image",
                     "src": "https://media3.giphy.com/media/P3bhrBdWCvek8/giphy.gif?cid=3640f6095bc83d5f2f48586e4d1a114e"
@@ -31,14 +43,7 @@
                     "type": "area",
                     "class": "overlay",
                     "id": "image-overlay",
-                    "content": [
-                        {
-                            "type": "area",
-                            "class": "overlay",
-                            "id": "overlay-button",
-                            "content": ""
-                        }
-                    ]
+                    "content": []
                 }
             ]
         },
@@ -74,19 +79,29 @@
         "width": "100%",
         "z-index": "2",
         "position": "absolute",
-        "top": "0px",
+        "top": "50px",
         "left": "0px",
         "display": "none"
     },
+    "#button-wrapper":{
+        "width": "100%",
+        "height": "40px",
+        "margin-bottom": "10px"
+    },
     "#overlay-button": {
-        "height": "20px",
-        "width": "20px",
-        "background-color": "rgba(255,0,0,1)",
-        "z-index": "3",
-        "position": "absolute",
-        "top": "calc(50% - 10px)",
-        "left": "calc(50% - 10px)",
-        "border-radius": "50px"
+        "height": "40px",
+        "width": "98px",
+        "background-color": "rgba(255,0,0,0)",
+        "position": "relative",
+        "left": "calc(50% - 50px)",
+        "border": "red 1px solid",
+        "border-radius": "10px",
+        "text-align": "center",
+        "vertical-align": "middle",
+        "line-height": "40px"
+    },
+    "#overlay-button:hover": {
+        "background-color": "rgba(255,0,0,1)"
     },
     "#replayButton": {
         "width": "50px",
