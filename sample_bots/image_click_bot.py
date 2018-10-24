@@ -166,6 +166,7 @@ class ChatNamespace(BaseNamespace):
             self.emit("text", {"msg": "Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
         elif game.click_on_target(data):
             self.emit("text", {"msg": "Correct!", 'room': room})
+            time.sleep(0.3)
             game.next_image()
             if game.curr_img:
                 self.emit('command', {'room': room,

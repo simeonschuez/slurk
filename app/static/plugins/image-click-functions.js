@@ -7,6 +7,8 @@ let mouse = {
     pos_prev: false,
 };
 
+let mousePositions = [];
+
 function getPosition (evt, area) {
     position = $(area).offset();
     mouse.pos.x = evt.clientX - position.left;
@@ -16,9 +18,9 @@ function getPosition (evt, area) {
 function emitPosition(a, intrvl) {
     if (mouse.move && mouse.pos_prev) {
         socket.emit('mouseMove', {coordinates: [ mouse.pos, mouse.pos_prev ],element:a, room: self_room, user: users});
-        socket.emit('log', {type: "mouse_move",coordinates:{pos:mouse.pos,pos_prev:mouse.pos_prev},element:a,room:self_room}); // 
+        console.log('mouseMove: ' + mouse.pos.x + ',' + mouse.pos.y);
+        mousePositions.push({timestamp:Date.now(), x:mouse.pos.x, y:mouse.pos.y});
         mouse.move = false;
-         console.log('mouseMove: ' + mouse.pos.x + ',' + mouse.pos.y)
     }
     mouse.pos_prev = {x: mouse.pos.x, y: mouse.pos.y};
     setTimeout(emitPosition, intrvl);
@@ -35,20 +37,25 @@ function trackMovement(area,interval) {
 socket.on('message', function(data) {
     if (data.user.name == "Image_Click_Bot") {
         console.log("message from image click bot")
-        if (data.msg.includes("Game started!")) {
+        if (data.msg.includes("Correct!")) {
+            $("#image-overlay").show();
+            console.log("logging tracking data");
+            socket.emit('log', {type: "mouse_positions", data:mousePositions, room: self_room});
+            mousePositions = [];
+        } else if (data.msg.includes("Game started!")) {
             gameStarted = true;
             console.log("game started:", gameStarted);
         } else if (data.msg.includes("No images left")) {
             gameStarted = false;
+            $(".overlay").hide();
             console.log("game started:", gameStarted);
         }
     }
 });
 
 socket.on('new_image', function(data) {
-    console.log("New image:", data);
-    set_image(data['url']);
-    console.log("new image. game started:",gameStarted)
+    //set_image(data['url']);
+    console.log("new image:",data,"Game started:",gameStarted)
     if (gameStarted==true) {
         /* show overlay and hide replayButton if new image is recieved */
         $(".overlay").show();
@@ -63,7 +70,7 @@ socket.on('file_path', function(data) {
 });
 
 // activate mouse tracking
-trackMovement("#current-image", 200);
+trackMovement("#current-image", 50);
 
 /* send coordinates on click */
 $(trackingArea).click(function(e){
