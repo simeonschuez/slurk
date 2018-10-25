@@ -2,7 +2,22 @@
   "html": [
     {
         "type": "audio",
-        "id":"audio-player",
+        "class":"audio",
+        "id":"audio-description",
+        "src": "",
+        "content":""
+    },
+    {
+        "type": "audio",
+        "class":"audio",
+        "id":"audio-correct",
+        "src": "",
+        "content":""
+    },
+    {
+        "type": "audio",
+        "class":"audio",
+        "id":"audio-false",
         "src": "",
         "content":""
     },
