@@ -113,6 +113,7 @@
         "border-radius": "10px",
         "text-align": "center",
         "vertical-align": "middle",
+        "display": "none",
         "line-height": "40px"
     },
     "#overlay-button:hover": {

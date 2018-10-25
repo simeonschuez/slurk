@@ -6,7 +6,7 @@ import lxml.html
 link = []
 
 def insert_names_and_tokens():
-    for i in ["Dr. John A. Zoidberg", "Professor Farnsworth"]:
+    for i in ["Dr. John A. Zoidberg"]:#, "Professor Farnsworth"]:
         full_name = i
         url = 'http://127.0.0.1:5000/token'
         s = requests.session()
@@ -24,5 +24,5 @@ def insert_names_and_tokens():
 
 links = insert_names_and_tokens()
 
-webbrowser.get('firefox').open(links[0])
-webbrowser.get('chromium-browser').open(links[1])
+webbrowser.get('chromium-browser').open(links[0])
+#webbrowser.get('firefox').open(links[1])

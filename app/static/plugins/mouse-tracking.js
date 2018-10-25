@@ -1,3 +1,5 @@
+let trackingArea = "#current-image"
+
 let mouse = {
     click: false,
     move: false,
@@ -13,8 +15,17 @@ function getPosition (evt, area) {
 
 function emitPosition(a, intrvl) {
     if (mouse.move && mouse.pos_prev) {
-        socket.emit('mouseMove', {coordinates: [ mouse.pos, mouse.pos_prev ],element:a, room: self_room, user: users});
-        socket.emit('log', {type: "mouse_move",coordinates:{pos:mouse.pos,pos_prev:mouse.pos_prev},element:a,room:self_room});
+        socket.emit('mousePosition', {
+            type:'move',
+            coordinates:mouse.pos,
+            element:trackingArea,
+            room:self_room
+        });
+        socket.emit('log', {
+            type: "mouse_move",
+            coordinates:{pos:mouse.pos,pos_prev:mouse.pos_prev},
+            element:a,room:self_room
+        });
         mouse.move = false;
         // console.log('mouseMove: ' + mouse.pos.x + ',' + mouse.pos.y)
     }
@@ -30,4 +41,5 @@ function trackMovement(area,interval) {
     emitPosition(area, interval);
 }
 
-trackMovement("#current-image", 50);
+// get position within trackingArea every 100 ms
+trackMovement(trackingArea, 100);
