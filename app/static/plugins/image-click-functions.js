@@ -89,14 +89,24 @@ $(".audio").attr({
 $(trackingArea).click(function(e){
     getPosition(e, trackingArea);
     console.log('mouseClick: ' + mouse.pos.x + ',' + mouse.pos.y);
-    socket.emit('mouseClick', {coordinates: mouse.pos,element:trackingArea, room: self_room});
+    socket.emit('mousePosition', {
+        type:'click',
+        element:trackingArea,
+        coordinates:mouse.pos,
+        room: self_room
+    });
     socket.emit('log', {type: "mouse_click", coordinates:mouse.pos,element:trackingArea, room: self_room}); //
 });
 
 /* if overlay button is clicked: hide overlay and play audio file */
 $('#overlay-button').click(function(e){
     getPosition(e, "#overlay-button");
-    socket.emit('mouseClick', {coordinates: mouse.pos,element:"#overlay-button", room: self_room});
+    socket.emit('mousePosition', {
+        type:'click',
+        element:"#overlay-button",
+        coordinates:mouse.pos,
+        room: self_room
+    })
     socket.emit('log', {type: "mouse_click", coordinates:mouse.pos,element:"#overlay-button", room: self_room});
     $(".overlay").hide();
     $("#replayButton").show();

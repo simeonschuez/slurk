@@ -156,31 +156,33 @@ class ChatNamespace(BaseNamespace):
             self.emit('command', {'room': room,
                                   'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
 
-    def on_mouse_click(self, data):
-        room = data['user']['latest_room']['id']
-        print("mouse click: ({x_pos}, {y_pos}), {user_name}".format(x_pos=data['x'],y_pos=data['y'],user_name=data['user']['name']))
-        if not game.curr_img: # if image is clicked before game was started
-            return
-        if data['element']== "#overlay-button":
-            # display target description and return
-            self.emit("text", {"msg": "Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
-        elif game.click_on_target(data):
-            self.emit("text", {"msg": "Correct!", 'room': room})
-            time.sleep(0.3)
-            game.next_image()
-            if game.curr_img:
-                self.emit('command', {'room': room,
-                                      'data': ['new_image', game.img_path+game.curr_img["image_filename"]]})
-                self.emit('transferFilePath', {'type':'audio','file':game.audio_path+game.curr_img['audio_filename'], 'room': room})
-            else: # if no images are left
-                self.emit("text", {"msg": "No images left! Congratulations!", 'room': room})
-                game.started = False
-                #thank you image
-                self.emit('command', {'room': room,
-                                    'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
-        else:
-            # display message if click was off target
-            self.emit("text", {"msg": "Try again!", 'room': room})
+    def on_mouse_position(self, data):
+        if data['type'] == 'click':
+            room = data['user']['latest_room']['id']
+            pos = data['coordinates']
+            print("mouse click: ({x_pos}, {y_pos}), {user_name}".format(x_pos=pos['x'],y_pos=pos['y'],user_name=data['user']['name']))
+            if not game.curr_img: # if image is clicked before game was started
+                return
+            if data['element']== "#overlay-button":
+                # display target description and return
+                self.emit("text", {"msg": "Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
+            elif game.click_on_target(pos):
+                self.emit("text", {"msg": "Correct!", 'room': room})
+                time.sleep(0.3)
+                game.next_image()
+                if game.curr_img:
+                    self.emit('command', {'room': room,
+                                          'data': ['new_image', game.img_path+game.curr_img["image_filename"]]})
+                    self.emit('transferFilePath', {'type':'audio','file':game.audio_path+game.curr_img['audio_filename'], 'room': room})
+                else: # if no images are left
+                    self.emit("text", {"msg": "No images left! Congratulations!", 'room': room})
+                    game.started = False
+                    #thank you image
+                    self.emit('command', {'room': room,
+                                        'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
+            else:
+                # display message if click was off target
+                self.emit("text", {"msg": "Try again!", 'room': room})
 
 class LoginNamespace(BaseNamespace):
     @staticmethod
