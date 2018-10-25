@@ -135,7 +135,7 @@ class ChatNamespace(BaseNamespace):
         room = data['user']['latest_room']['id']
         if game.curr_img:
             # if game is running: overlay is created if new image is set
-            self.emit("text", {"msg": "Click the red button to continue.", 'room': room})
+            self.emit("text", {"msg": "Click the button to continue.", 'room': room})
 
 #    def on_mouse_move(self,data):
 #        print ("mouse_move: ", data["coords"], data["coords_prev"], data["user"]["name"])
