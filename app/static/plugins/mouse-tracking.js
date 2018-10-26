@@ -15,7 +15,6 @@ function getPosition (evt, area) {
 
 function emitPosition(a,intrvl) {
     if (mouse.move) {
-        console.log(mouse.pos, a);
         socket.emit('mousePosition', {
             type:'move',
             coordinates:mouse.pos,
