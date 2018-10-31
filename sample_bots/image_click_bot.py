@@ -135,7 +135,7 @@ class ChatNamespace(BaseNamespace):
         room = data['user']['latest_room']['id']
         if game.curr_img:
             # if game is running: overlay is created if new image is set
-            self.emit("text", {"msg": "Click the button to continue.", 'room': room})
+            self.emit("text", {"msg": "#nodisplay# Click the button to continue.", 'room': room})
 
 #    def on_mouse_move(self,data):
 #        print ("mouse_move: ", data["coords"], data["coords_prev"], data["user"]["name"])
@@ -165,9 +165,9 @@ class ChatNamespace(BaseNamespace):
                 return
             if data['element']== "#overlay-button":
                 # display target description and return
-                self.emit("text", {"msg": "Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
+                self.emit("text", {"msg": "#nodisplay# Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
             elif game.click_on_target(pos):
-                self.emit("text", {"msg": "Correct!", 'room': room})
+                self.emit("text", {"msg": "#nodisplay# Correct!", 'room': room})
                 time.sleep(0.3)
                 game.next_image()
                 if game.curr_img:
@@ -182,7 +182,7 @@ class ChatNamespace(BaseNamespace):
                                         'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
             else:
                 # display message if click was off target
-                self.emit("text", {"msg": "Try again!", 'room': room})
+                self.emit("text", {"msg": "#nodisplay# Try again!", 'room': room})
 
 class LoginNamespace(BaseNamespace):
     @staticmethod

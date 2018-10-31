@@ -3,8 +3,7 @@ let trackingArea = "#current-image"
 let mouse = {
     click: false,
     move: false,
-    pos: {x:false, y:false},
-    pos_prev: false,
+    pos: {x:false, y:false}
 };
 let mousePositions = [];
 var audioDescription = document.getElementById('audio-description');
@@ -18,13 +17,15 @@ function getPosition (evt, area) {
 }
 
 function emitPosition(a, intrvl) {
-    if (mouse.move && mouse.pos_prev) {
-        console.log('mouseMove: ' + mouse.pos.x + ',' + mouse.pos.y);
-        mousePositions.push({timestamp:Date.now(), x:mouse.pos.x, y:mouse.pos.y});
-        mouse.move = false;
-    }
-    mouse.pos_prev = {x: mouse.pos.x, y: mouse.pos.y};
-    setTimeout(emitPosition, intrvl);
+  if (mouse.move) {
+      mousePositions.push({
+          timestamp:Date.now(),
+          x:mouse.pos.x,
+          y:mouse.pos.y
+        });
+      console.log(mouse.pos)
+      mouse.move = false;
+  }
 }
 
 function trackMovement(area,interval) {
@@ -32,7 +33,7 @@ function trackMovement(area,interval) {
         getPosition(e, area);
         mouse.move = true;
     });
-    emitPosition(area, interval);
+    setInterval(emitPosition,interval,area)
 }
 
 socket.on('message', function(data) {
@@ -56,6 +57,16 @@ socket.on('message', function(data) {
             gameStarted = false;
             $(".overlay").hide();
             console.log("game started:", gameStarted);
+        }
+    }
+
+    // display messages
+    if (self_user.id == data.user.id) return;
+    if (data["image"] !== undefined) {
+        display_image(data.user, data.timestamp, data.image, data.width, data.height, data.privateMessage);
+    } else {
+        if (!((data.user.name == "Image_Click_Bot")&&data.msg.startsWith("#nodisplay#"))) {
+        display_message(data.user, data.timestamp, data.msg, data.privateMessage);
         }
     }
 });

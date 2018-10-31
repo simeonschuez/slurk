@@ -127,7 +127,6 @@
   },
   "scripts": {
     "document-ready": "image-click-functions",
-    "incoming-message": "display-message",
     "submit-message": "send-message",
     "print-history": "plain-history"
   }
