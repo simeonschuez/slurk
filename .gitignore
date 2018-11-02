@@ -4,6 +4,6 @@ botsi.db
 config.ini
 .DS_Store
 _build
-static/audio
-static/images
-static/json
+static/audio/*
+static/images/*
+static/json/*
