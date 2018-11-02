@@ -130,7 +130,7 @@ class ChatNamespace(BaseNamespace):
                                          "name": room,
                                          "label": label.title(),
                                          "users": clients,
-                                         "layout": "meetup-task",
+                                         "layout": "bounding-boxes",
                                          "hide": []})
             tasks[task_id]['users'].clear()
 

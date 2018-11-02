@@ -115,6 +115,11 @@ class Layout:
                                   attributes=attributes,
                                   content=entry.get("content"),
                                   indent=indent)
+            elif entry["type"] == "canvas":
+                html += self._tag("canvas",
+                                  attributes=attributes,
+                                  content=entry.get("content"),
+                                  indent=indent)
         return html
 
     @staticmethod

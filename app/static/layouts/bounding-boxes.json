@@ -13,12 +13,26 @@
           "type": "break"
         },
         {
-          "type": "image",
-          "id": "current-image",
-          "src": "https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif",
-          "width": 500,
-          "height": 400
+          "type": "area",
+          "id": "image-wrapper",
+          "content": [
+            {
+              "type": "image",
+              "id": "current-image",
+              "width": "500px",
+              "height": "400px",
+              "src": "https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif"
+            },
+            {
+              "type": "canvas",
+              "id": "canvas",
+              "width": "500px",
+              "height": "400px",
+              "content": ""
+            }
+          ]
         }
+
       ]
     },
     {
@@ -34,6 +48,18 @@
     "#image-area": {
       "align-content": "left",
       "margin": "50px 20px 15px"
+    },
+    "#image-wrapper": {
+      "position": "relative",
+      "display": "inline-block"
+    },
+    "#current-image": {
+    },
+    "#canvas": {
+      "z-index": "2",
+      "position": "absolute",
+      "top": "0px",
+      "left": "0px"
     }
   },
   "scripts": {
