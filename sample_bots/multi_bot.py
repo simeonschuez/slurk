@@ -76,6 +76,9 @@ class ChatNamespace(BaseNamespace):
             self.emit('join_room', {'room': 1, 'user': user})
         self.emit('leave_room', {'room': data['room']['id']})
 
+    def on_mouse_position(self,data):
+        if data["type"]=="bb":
+            print(data)
 
 class LoginNamespace(BaseNamespace):
     @staticmethod
