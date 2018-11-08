@@ -13,20 +13,20 @@ rectangle = {
     height: null
   };
 
+img = document.getElementById('current-image');
 canvas  = document.getElementById('canvas');
 if (canvas == null) {
   // create canvas and fit it over #current-image
   canvas = document.createElement('canvas');
-  img = document.getElementById('current-image');
   canvas.id = "canvas";
   canvas.width = img.clientWidth;
   canvas.height = img.clientHeight;
-  canvas.style.zIndex = 2;
+  canvas.style.zIndex = 100;
   canvas.style.position = "absolute";
   canvas.style.top = "0px";
   canvas.style.left = "0px";
-  $("#current-image").wrap( "<div id='image-wrapper' style='position:relative;'></div>");
-  imgWrapper = document.getElementById("image-wrapper");
+  $("#current-image").wrap("<div id='img-wrapper' style='position:relative;'></div>");
+  imgWrapper = document.getElementById("img-wrapper");
   imgWrapper.appendChild(canvas);
 }
 
@@ -87,6 +87,15 @@ function posOnRectangle(){
     return true;
   } else {return false;}
 }
+
+img.onload = function (){
+    // refresh canvas size and context properties
+    canvas.width = img.clientWidth;
+    canvas.height = img.clientHeight;
+    context.fillStyle = "rgba(255,0,0,0.2)";
+    context.strokeStyle = 'red';
+    context.lineWidth = 2;
+};
 
 canvas.onmousedown = function(e){
     getPosition(e);
