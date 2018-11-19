@@ -24,7 +24,6 @@ def add_user(room, id):
         users[room] = []
     users[room].append(id)
 
-
 class ChatNamespace(BaseNamespace):
     @staticmethod
     def on_joined_room(data):
@@ -56,6 +55,7 @@ class ChatNamespace(BaseNamespace):
         self.emit("command", {'room': room['id'], 'data': ['listen_to', 'new_image_private']})
         self.emit("command", {'room': room['id'], 'data': ['listen_to', 'new_image_public']})
         self.emit("command", {'room': room['id'], 'data': ['listen_to', 'end_meetup']})
+        self.emit("command", {'room': room['id'], 'data': ['listen_to', 'zoom']})
 
     def on_new_image_public(self, data):
         print("requested new public image:", data)
@@ -76,6 +76,18 @@ class ChatNamespace(BaseNamespace):
             self.emit('join_room', {'room': 1, 'user': user})
         self.emit('leave_room', {'room': data['room']['id']})
 
+    def on_zoom(self, data):
+        zoom_level = randint(2,5)
+        x_pos = randint(0,500)
+        y_pos = randint(0,400)
+        self.emit('modifyImage', {
+            'type':'zoom',
+            'parameters':{
+                'focus':{'x': x_pos, 'y': y_pos},
+                'zoom_level': zoom_level},
+            'room': data['room']['id']
+            })
+        print ("Zoom\nposition: [{x},{y}]; zoom-level: {zlevel}".format(x=x_pos, y=y_pos, zlevel=zoom_level))
 
 class LoginNamespace(BaseNamespace):
     @staticmethod

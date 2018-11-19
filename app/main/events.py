@@ -40,6 +40,20 @@ def request_new_image(_name, room, data):
         }, room=room.name())
         log({'type': "new_image", 'room': room.id(), 'url': data[0]})
 
+@socketio.on('modifyImage', namespace='/chat')
+def image_modification(data):
+    """
+    Emit an event 'image_modification' to cause changes in the appearence
+    of an image shown to the client according to given parameters
+    """
+    emit('image_modification', {
+        'type': data.get('type'),
+        'element': data.get('element'),
+        'parameters': data.get('parameters'),
+        'user': current_user.serialize(),
+        'timestamp': timegm(datetime.now().utctimetuple()),
+    }, room=Room.from_id(data['room']).name())
+
 @socketio.on('mousePosition', namespace='/chat')
 def mouse_position(data):
     """
