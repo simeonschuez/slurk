@@ -17,7 +17,7 @@ function initBgImage() {
   img.style.backgroundSize=img.width.toString()+"px "+img.height.toString()+"px";
 
   // set transition for zooming in/out and moving the viewport
-  //img.style.transition="background-size 0.5s ease, background-position 0.5s";
+  img.style.transition="background-size 0.5s ease, background-position 0.5s";
 
   // transparent gif as image source
   img.src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==\n";
@@ -73,3 +73,8 @@ $("#current-image").mousemove(function(e){
   console.log(x,y);
     zoomImage(zoomLevel, {x:x, y:y});
 });
+
+
+// nutzer verschiebt viewport -> daten an bot
+// smoothe bewegung an zielort
+// koordinaten (bezogen auf originalbild) bei mausklick
