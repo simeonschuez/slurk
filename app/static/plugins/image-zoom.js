@@ -11,10 +11,13 @@ function initBgImage() {
 
   img = document.getElementById("current-image");
 
-  // image source as background image
+  // image source as background image, css properties
   img.style.backgroundImage="url("+img.src;+")";
   img.style.backgroundRepeat="no-repeat";
   img.style.backgroundSize=img.width.toString()+"px "+img.height.toString()+"px";
+
+  // set transition for zooming in/out and moving the viewport
+  //img.style.transition="background-size 0.5s ease, background-position 0.5s";
 
   // transparent gif as image source
   img.src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==\n";
@@ -24,11 +27,12 @@ function zoomImage(zoom, position) {
   /*
     modify background image according to zoom level and focus position
   */
-  // background image size
+
+  // calculate background image size
   bgWidth = img.width*zoom;
   bgHeight = img.height*zoom;
 
-  // viewport position
+  // calculate viewport position
   offset.x = (position.x * zoom)-(img.width / 2);
   offset.y = (position.y * zoom)-(img.height / 2);
 
@@ -42,6 +46,7 @@ function zoomImage(zoom, position) {
   img.style.backgroundSize=bgWidth.toString()+"px "+bgHeight.toString()+"px";
   img.style.backgroundPosition = "-"+offset.x.toString()+"px -"+offset.y.toString()+"px";
 
+  // log into console
   console.log("zoom:", zoom, "width:", img.width, "height:",img.height,"bgWidth:", bgWidth, "bgHeight:", bgHeight,"position:", position, "offset.x:",offset.x, "offset.y:", offset.y);
 }
 
