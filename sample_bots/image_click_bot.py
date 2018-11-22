@@ -111,6 +111,11 @@ class ChatNamespace(BaseNamespace):
         self.emit("command", {'room': room['id'], 'data': ['listen_to', 'skip_image']})
 
     def on_start_game(self,data):
+        """
+        prepare & start game:
+        import json files, set first image, send audio files to client
+        """
+        # check if game was already started
         if game.started == True:
             self.emit("text", {"msg": "Game already started!", 'room': data['room']['id']})
             return
@@ -137,10 +142,13 @@ class ChatNamespace(BaseNamespace):
             # if game is running: overlay is created if new image is set
             self.emit("text", {"msg": "#nodisplay# Click the button to continue.", 'room': room})
 
-#    def on_mouse_move(self,data):
-#        print ("mouse_move: ", data["coords"], data["coords_prev"], data["user"]["name"])
+    #def on_mouse_move(self,data):
+       #print ("mouse_move: ", data["coords"], data["coords_prev"], data["user"]["name"])
 
     def on_skip_image(self,data):
+        """
+        skip image, set new image if possible, otherwise quit game
+        """
         room = data['room']['id']
         self.emit("text", {"msg": "Next image", 'room': room})
         game.next_image()
@@ -157,6 +165,14 @@ class ChatNamespace(BaseNamespace):
                                   'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
 
     def on_mouse_position(self, data):
+        """
+        on mouse click:
+        check if client clicked on button
+            if so: perform corresponding action
+            if not: check if client clicked on target.
+                if so: set new image,
+                otherwise send feedback message
+        """
         if data['type'] == 'click':
             room = data['user']['latest_room']['id']
             pos = data['coordinates']

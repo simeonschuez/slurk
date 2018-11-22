@@ -129,4 +129,5 @@ $('#overlay-button').click(function(e){
 /* play audio if replay button is clicked */
 $("#replayButton").click(function(){
     audioDescription.play();
+    socket.emit('log', {type: "mouse_click", coordinates:mouse.pos,element:"#replay-button", room: self_room});
 })
