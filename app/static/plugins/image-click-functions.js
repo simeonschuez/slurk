@@ -9,6 +9,19 @@ let mousePositions = [];
 var audioDescription = document.getElementById('audio-description');
 var audioCorrect = document.getElementById('audio-correct');
 var audioFalse = document.getElementById('audio-false');
+let image = document.getElementById("current-image")
+var imgWrapper = document.getElementById('image-wrapper');
+var sidebar = document.getElementById('sidebar');
+
+/* Event listener */
+
+document.addEventListener("fullscreenchange", fullscreenChange );
+// cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
+document.addEventListener("mozfullscreenchange", fullscreenChange );
+document.addEventListener("webkitfullscreenchange", fullscreenChange );
+document.addEventListener("msfullscreenchange", fullscreenChange );
+
+/* Function definitions */
 
 function getPosition (evt, area) {
     position = $(area).offset();
@@ -23,7 +36,6 @@ function emitPosition(a, intrvl) {
           x:mouse.pos.x,
           y:mouse.pos.y
         });
-      console.log(mouse.pos)
       mouse.move = false;
   }
 }
@@ -35,6 +47,44 @@ function trackMovement(area,interval) {
     });
     setInterval(emitPosition,interval,area)
 }
+
+function centerImage() {
+    imgWrapper.style.left = ((sidebar.offsetWidth/2)-(imgWrapper.offsetWidth/2));
+}
+
+function enterFullscreen(element) {
+  if(element.requestFullscreen) {
+    element.requestFullscreen();
+    // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
+  } else if(element.mozRequestFullScreen) {
+    element.mozRequestFullScreen();
+  } else if(element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen();
+  } else if(element.msRequestFullscreen) {
+    element.msRequestFullscreen();
+  }
+}
+
+function closeFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+    // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
+  } else if (document.mozCancelFullScreen) {
+    document.mozCancelFullScreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen();
+  }
+}
+
+function fullscreenChange () {
+    if (gameStarted == true) {
+        console.log("fullscreen change, game still running")
+    }
+}
+
+/* Socket events */
 
 socket.on('message', function(data) {
     if (data.user.name == "Image_Click_Bot") {
@@ -54,6 +104,7 @@ socket.on('message', function(data) {
             audioFalse.src="/static/audio/tryagain.wav";
             console.log("game started:", gameStarted);
         } else if (data.msg.includes("No images left")) {
+            closeFullscreen(); /* Exit fullscreen */
             gameStarted = false;
             $(".overlay").hide();
             console.log("game started:", gameStarted);
@@ -89,6 +140,14 @@ socket.on('file_path', function(data) {
 
 // activate mouse tracking
 trackMovement(trackingArea, 50);
+
+image.onload = function () {
+   centerImage();
+}
+
+window.onresize = function(event) {
+    centerImage();
+};
 
 /* add preload and type attributes to audio elements */
 $(".audio").attr({
@@ -131,3 +190,5 @@ $("#replayButton").click(function(){
     audioDescription.play();
     socket.emit('log', {type: "mouse_click", coordinates:mouse.pos,element:"#replay-button", room: self_room});
 })
+
+$("header").click(function(){enterFullscreen(document.documentElement);});
