@@ -38,18 +38,6 @@
             "id": "image-wrapper",
             "content": [
                 {
-                    "type": "area",
-                    "id":"button-wrapper",
-                    "content":[
-                        {
-                            "type": "area",
-                            "class": "overlay",
-                            "id": "overlay-button",
-                            "content":["Continue"]
-                        }
-                    ]
-                },
-                {
                     "type": "image",
                     "id": "current-image",
                     "src": "https://media3.giphy.com/media/P3bhrBdWCvek8/giphy.gif?cid=3640f6095bc83d5f2f48586e4d1a114e"
@@ -59,13 +47,26 @@
                     "class": "overlay",
                     "id": "image-overlay",
                     "content": []
+                },
+                {
+                    "type": "area",
+                    "class": "overlay button",
+                    "id": "overlay-button",
+                    "content":"&#8594;"
+                },
+                {
+                    "type": "area",
+                    "class": "img-button button",
+                    "id": "replayButton",
+                    "content": "&#x1f50a;"
+                },
+                {
+                    "type": "area",
+                    "class": "img-button button",
+                    "id": "reportButton",
+                    "content": "&#9888;"
                 }
             ]
-        },
-        {
-            "type": "area",
-            "id": "replayButton",
-            "content": "&#x1f50a;"
         }
       ]
     },
@@ -89,40 +90,43 @@
         "z-index": "1"
     },
     "#image-overlay": {
-        "background-color": "rgba(0,0,0,0.9)",
-        "height": "100%",
+        "background-color": "rgba(0,0,0,1)",
+        "height": "calc(100%-200px)",
         "width": "100%",
         "z-index": "2",
         "position": "absolute",
-        "top": "50px",
+        "top": "0px",
         "left": "0px",
         "display": "none"
     },
-    "#button-wrapper":{
-        "width": "100%",
+    ".button": {
         "height": "40px",
-        "margin-bottom": "10px"
-    },
-    "#overlay-button": {
-        "height": "40px",
-        "width": "98px",
+        "width": "40px",
         "background-color": "rgba(255,0,0,0)",
-        "position": "relative",
-        "left": "calc(50% - 50px)",
+        "position": "absolute",
+        "bottom": "40px",
         "border": "red 1px solid",
-        "border-radius": "10px",
+        "border-radius": "50px",
         "text-align": "center",
+        "font-size": "2em",
+        "display": "table-cell",
         "vertical-align": "middle",
         "display": "none",
-        "line-height": "40px"
+        "z-index": 3
     },
-    "#overlay-button:hover": {
+    ".button:hover": {
         "background-color": "rgba(255,0,0,1)"
     },
-    "#replayButton": {
-        "width": "50px",
+    "#overlay-button": {
         "height": "50px",
-        "display": "none"
+        "width": "50px",
+        "left": "calc(50% - 25px)"
+    },
+    "#replayButton": {
+        "left": "17%"
+    },
+    "#reportButton": {
+        "right": "17%"
     },
     "#content":{
         "display":"none"

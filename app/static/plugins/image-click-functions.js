@@ -93,6 +93,7 @@ socket.on('message', function(data) {
             // play audio, log tracking data, show overlay
             audioCorrect.play();
             $("#image-overlay").show();
+            $(".img-button").hide();
             console.log("logging tracking data");
             socket.emit('log', {type: "mouse_positions", data:mousePositions, room: self_room});
             mousePositions = [];
@@ -128,7 +129,7 @@ socket.on('new_image', function(data) {
     if (gameStarted==true) {
         /* show overlay and hide replayButton if new image is recieved */
         $(".overlay").show();
-        $("#replayButton").hide();
+        $(".img-button").hide();
     }
   });
 
@@ -179,7 +180,7 @@ $('#overlay-button').click(function(e){
     })
     socket.emit('log', {type: "mouse_click", coordinates:mouse.pos,element:"#overlay-button", room: self_room});
     $(".overlay").hide();
-    $("#replayButton").show();
+    $(".img-button").show();
     /* play transmitted audio file after 500 ms */
     setTimeout(function(){
         audioDescription.play();}, 500);
