@@ -80,6 +80,23 @@ def add_user(room, id):
 
 
 class ChatNamespace(BaseNamespace):
+
+    def set_image(self,room):
+        """
+        emit new_image command if there are images left
+        """
+        if game.curr_img:
+            self.emit('command', {'room': room,
+            'data': ['new_image', game.img_path+game.curr_img["image_filename"]]})
+            self.emit('transferFilePath', {'type':'audio','file':game.audio_path+game.curr_img['audio_filename'], 'room': room})
+        else:
+            # return message if no images are left
+            self.emit("text", {"msg": "No images left", 'room': room})
+            game.started = False
+            #thank you image
+            self.emit('command', {'room': room,
+            'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
+
     @staticmethod
     def on_joined_room(data):
         global users, self_id
@@ -115,9 +132,10 @@ class ChatNamespace(BaseNamespace):
         prepare & start game:
         import json files, set first image, send audio files to client
         """
+        room = data['room']['id']
         # check if game was already started
         if game.started == True:
-            self.emit("text", {"msg": "Game already started!", 'room': data['room']['id']})
+            self.emit("text", {"msg": "Game already started!", 'room':room})
             return
         # assign initial values
         game.get_json("app/static/json/")
@@ -127,42 +145,20 @@ class ChatNamespace(BaseNamespace):
         game.get_image()
         # mark file as used
         with open(game.json_path, 'w') as outfile:
-            game.images["used"] = True
+            # mark json file as used
+#            game.images["used"] = True
             json.dump(game.images, outfile, sort_keys=True, indent=1)
-        self.emit("text", {"msg": "Game started!", 'room': data['room']['id']})
-        # set first image
-        self.emit('command', {'room': data['room']['id'],
-                              'data': ['new_image', game.img_path+game.curr_img["image_filename"]]})
-        # send audio files to client
-        self.emit('transferFilePath', {'type':'audio','file':game.audio_path+game.curr_img['audio_filename'], 'room': data['room']['id']})
-
-    def on_new_image(self,data):
-        room = data['user']['latest_room']['id']
-        if game.curr_img:
-            # if game is running: overlay is created if new image is set
-            self.emit("text", {"msg": "#nodisplay# Click the button to continue.", 'room': room})
-
-    #def on_mouse_move(self,data):
-       #print ("mouse_move: ", data["coords"], data["coords_prev"], data["user"]["name"])
+        self.emit("text", {"msg": "Game started!", 'room': room})
+        #set first image
+        self.set_image(room)
 
     def on_skip_image(self,data):
         """
-        skip image, set new image if possible, otherwise quit game
+        set next image
         """
         room = data['room']['id']
-        self.emit("text", {"msg": "Next image", 'room': room})
         game.next_image()
-        if game.curr_img:
-            self.emit('command', {'room': room,
-                                  'data': ['new_image', game.img_path+game.curr_img["image_filename"]]})
-            self.emit('transferFilePath', {'type':'audio','file':game.audio_path+game.curr_img['audio_filename'], 'room': room})
-        else:
-            # return message if no images are left
-            self.emit("text", {"msg": "No images left", 'room': room})
-            game.started = False
-            #thank you image
-            self.emit('command', {'room': room,
-                                  'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
+        self.set_image(room)
 
     def on_mouse_position(self, data):
         """
@@ -176,26 +172,23 @@ class ChatNamespace(BaseNamespace):
         if data['type'] == 'click':
             room = data['user']['latest_room']['id']
             pos = data['coordinates']
-            print("mouse click: ({x_pos}, {y_pos}), {user_name}".format(x_pos=pos['x'],y_pos=pos['y'],user_name=data['user']['name']))
+            print("mouse click: ({x_pos}, {y_pos}), {user_name}, {element}".format(x_pos=pos['x'],y_pos=pos['y'],user_name=data['user']['name'],element=data['element']))
             if not game.curr_img: # if image is clicked before game was started
                 return
-            if data['element']== "#overlay-button":
+            elif data['element'] == "#overlayButton":
                 # display target description and return
                 self.emit("text", {"msg": "#nodisplay# Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
+            elif data['element'] == "#replayButton":
+                pass
+            elif data['element'] == "#reportButton":
+                # skip image
+                game.next_image()
+                self.set_image(room)
             elif game.click_on_target(pos):
                 self.emit("text", {"msg": "#nodisplay# Correct!", 'room': room})
                 time.sleep(0.3)
                 game.next_image()
-                if game.curr_img:
-                    self.emit('command', {'room': room,
-                                          'data': ['new_image', game.img_path+game.curr_img["image_filename"]]})
-                    self.emit('transferFilePath', {'type':'audio','file':game.audio_path+game.curr_img['audio_filename'], 'room': room})
-                else: # if no images are left
-                    self.emit("text", {"msg": "No images left! Congratulations!", 'room': room})
-                    game.started = False
-                    #thank you image
-                    self.emit('command', {'room': room,
-                                        'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
+                self.set_image(room)
             else:
                 # display message if click was off target
                 self.emit("text", {"msg": "#nodisplay# Try again!", 'room': room})

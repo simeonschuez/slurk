@@ -84,6 +84,14 @@ function fullscreenChange () {
     }
 }
 
+function logMouseData() {
+    $("#image-overlay").fadeIn(200);
+    $(".img-button").fadeOut(200);
+    console.log("logging tracking data");
+    socket.emit('log', {type: "mouse_positions", data:mousePositions, room: self_room});
+    mousePositions = [];
+}
+
 /* Socket events */
 
 socket.on('message', function(data) {
@@ -92,11 +100,7 @@ socket.on('message', function(data) {
         if (data.msg.includes("Correct!")) {
             // play audio, log tracking data, show overlay
             audioCorrect.play();
-            $("#image-overlay").show();
-            $(".img-button").hide();
-            console.log("logging tracking data");
-            socket.emit('log', {type: "mouse_positions", data:mousePositions, room: self_room});
-            mousePositions = [];
+            logMouseData();
         } else if (data.msg.includes("Try again!")) {
             audioFalse.play();
         } else if (data.msg.includes("Game started!")) {
@@ -112,7 +116,7 @@ socket.on('message', function(data) {
         }
     }
 
-    // display messages
+    // display / hide messages
     if (self_user.id == data.user.id) return;
     if (data["image"] !== undefined) {
         display_image(data.user, data.timestamp, data.image, data.width, data.height, data.privateMessage);
@@ -140,13 +144,13 @@ socket.on('file_path', function(data) {
 });
 
 // activate mouse tracking
-trackMovement(trackingArea, 50);
+trackMovement(trackingArea, 10);
 
+// center image if new image is loaded or window is resized
 image.onload = function () {
-   centerImage();
+    centerImage();
 }
-
-window.onresize = function(event) {
+window.onresize = function () {
     centerImage();
 };
 
@@ -157,39 +161,56 @@ $(".audio").attr({
 });
 
 /* send coordinates on click */
-$(trackingArea).click(function(e){
-    getPosition(e, trackingArea);
-    console.log('mouseClick: ' + mouse.pos.x + ',' + mouse.pos.y);
+$("#current-image").click(function(e){
+    getPosition(e, "#current-image");
     socket.emit('mousePosition', {
         type:'click',
-        element:trackingArea,
+        element:"#current-image",
         coordinates:mouse.pos,
         room: self_room
     });
-    socket.emit('log', {type: "mouse_click", coordinates:mouse.pos,element:trackingArea, room: self_room}); //
+    socket.emit('log', {
+        type: "mouse_click",
+        coordinates:mouse.pos,
+        element:"#current-image",
+        room: self_room});
 });
 
-/* if overlay button is clicked: hide overlay and play audio file */
-$('#overlay-button').click(function(e){
-    getPosition(e, "#overlay-button");
+/* if button is clicked: emit event and log */
+$('.button').click(function(e){
+    /* assign coordinates of the button's center point to mouse.pos and emit events*/
+    mouse.pos.x = e.target.offsetLeft + (e.target.offsetWidth / 2);
+    mouse.pos.y = e.target.offsetTop + (e.target.offsetHeight / 2);
     socket.emit('mousePosition', {
         type:'click',
-        element:"#overlay-button",
+        element:"#"+e.target.id,
         coordinates:mouse.pos,
         room: self_room
-    })
-    socket.emit('log', {type: "mouse_click", coordinates:mouse.pos,element:"#overlay-button", room: self_room});
-    $(".overlay").hide();
-    $(".img-button").show();
-    /* play transmitted audio file after 500 ms */
-    setTimeout(function(){
-        audioDescription.play();}, 500);
+    });
+    socket.emit('log', {
+        type: "mouse_click",
+        coordinates:mouse.pos,
+        element:"#"+e.target.id,
+        room: self_room
+    });
+    /* if overlay button is clicked: hide overlay and play audio file */
+    if (e.target.id == "overlayButton") {
+        $(".overlay").fadeOut(200);
+        $(".img-button").fadeIn(200);
+        /* play transmitted audio file after 500 ms */
+        setTimeout(function(){
+            audioDescription.play();}, 500);
+    }
+    /* play audio if replay button is clicked */
+    else if (e.target.id == "replayButton") {
+        audioDescription.play();
+    }
+    /* emit log if report button is clicked */
+    else if (e.target.id == "reportButton") {
+        logMouseData();
+    }
 });
 
-/* play audio if replay button is clicked */
-$("#replayButton").click(function(){
-    audioDescription.play();
-    socket.emit('log', {type: "mouse_click", coordinates:mouse.pos,element:"#replay-button", room: self_room});
-})
-
-$("header").click(function(){enterFullscreen(document.documentElement);});
+$("header").click(function(){
+    enterFullscreen(document.documentElement);
+});

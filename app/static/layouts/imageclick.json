@@ -51,7 +51,7 @@
                 {
                     "type": "area",
                     "class": "overlay button",
-                    "id": "overlay-button",
+                    "id": "overlayButton",
                     "content":"&#8594;"
                 },
                 {
@@ -91,7 +91,7 @@
     },
     "#image-overlay": {
         "background-color": "rgba(0,0,0,1)",
-        "height": "calc(100%-200px)",
+        "height": "calc(100% - 200px)",
         "width": "100%",
         "z-index": "2",
         "position": "absolute",
@@ -117,7 +117,7 @@
     ".button:hover": {
         "background-color": "rgba(255,0,0,1)"
     },
-    "#overlay-button": {
+    "#overlayButton": {
         "height": "50px",
         "width": "50px",
         "left": "calc(50% - 25px)"
