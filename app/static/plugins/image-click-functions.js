@@ -179,8 +179,7 @@ $("#current-image").click(function(e){
 /* if button is clicked: emit event and log */
 $('.button').click(function(e){
     /* assign coordinates of the button's center point to mouse.pos and emit events*/
-    mouse.pos.x = e.target.offsetLeft + (e.target.offsetWidth / 2);
-    mouse.pos.y = e.target.offsetTop + (e.target.offsetHeight / 2);
+    getPosition(e, trackingArea)
     socket.emit('mousePosition', {
         type:'click',
         element:"#"+e.target.id,
