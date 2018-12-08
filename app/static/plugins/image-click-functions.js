@@ -5,6 +5,7 @@ let mouse = {
     move: false,
     pos: {x:false, y:false}
 };
+let scaleFactor = {x:undefined, y:undefined};
 let mousePositions = [];
 var audioDescription = document.getElementById('audio-description');
 var audioCorrect = document.getElementById('audio-correct');
@@ -23,10 +24,15 @@ document.addEventListener("msfullscreenchange", fullscreenChange );
 
 /* Function definitions */
 
+function getImageScaleFactor(img) {
+  scaleFactor.x = img.width / img.naturalWidth;
+  scaleFactor.y = img.height / img.naturalHeight;
+}
+
 function getPosition (evt, area) {
     position = $(area).offset();
-    mouse.pos.x = evt.clientX - position.left;
-    mouse.pos.y = evt.clientY - position.top;
+    mouse.pos.x = (evt.clientX - position.left) / scaleFactor.x;
+    mouse.pos.y = (evt.clientY - position.top) / scaleFactor.y;
 }
 
 function emitPosition(a, intrvl) {
@@ -148,9 +154,11 @@ trackMovement(trackingArea, 10);
 
 // center image if new image is loaded or window is resized
 image.onload = function () {
+    getImageScaleFactor(image);
     centerImage();
 }
 window.onresize = function () {
+    getImageScaleFactor(image);
     centerImage();
 };
 
