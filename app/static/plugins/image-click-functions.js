@@ -188,6 +188,7 @@ $("#current-image").click(function(e){
 $('.button').click(function(e){
     /* assign coordinates of the button's center point to mouse.pos and emit events*/
     getPosition(e, trackingArea)
+    console.log("click on "+e.target.id)
     socket.emit('mousePosition', {
         type:'click',
         element:"#"+e.target.id,
@@ -215,6 +216,10 @@ $('.button').click(function(e){
     /* emit log if report button is clicked */
     else if (e.target.id == "reportButton") {
         logMouseData();
+    }
+    /* hide startButton if clicked */
+    else if (e.target.id == "startButton") {
+        $("#startButton").fadeOut(200);
     }
 });
 

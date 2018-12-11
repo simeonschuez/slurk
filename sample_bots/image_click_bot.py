@@ -97,6 +97,30 @@ class ChatNamespace(BaseNamespace):
             self.emit('command', {'room': room,
             'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
 
+    def start_game(self,room):
+        """
+        prepare & start game:
+        import json files, set first image, send audio files to client
+        """
+        # check if game was already started
+        if game.started == True:
+            self.emit("text", {"msg": "Game already started!", 'room':room})
+            return
+        # assign initial values
+        game.get_json("app/static/json/")
+        if game.images == False:
+            print ("no json files left in directory")
+            return
+        game.get_image()
+        # mark file as used
+        with open(game.json_path, 'w') as outfile:
+            # mark json file as used
+#            game.images["used"] = True
+            json.dump(game.images, outfile, sort_keys=True, indent=1)
+        self.emit("text", {"msg": "Game started!", 'room': room})
+        #set first image
+        self.set_image(room)
+
     @staticmethod
     def on_joined_room(data):
         global users, self_id
@@ -128,29 +152,8 @@ class ChatNamespace(BaseNamespace):
         self.emit("command", {'room': room['id'], 'data': ['listen_to', 'skip_image']})
 
     def on_start_game(self,data):
-        """
-        prepare & start game:
-        import json files, set first image, send audio files to client
-        """
         room = data['room']['id']
-        # check if game was already started
-        if game.started == True:
-            self.emit("text", {"msg": "Game already started!", 'room':room})
-            return
-        # assign initial values
-        game.get_json("app/static/json/")
-        if game.images == False:
-            print ("no json files left in directory")
-            return
-        game.get_image()
-        # mark file as used
-        with open(game.json_path, 'w') as outfile:
-            # mark json file as used
-#            game.images["used"] = True
-            json.dump(game.images, outfile, sort_keys=True, indent=1)
-        self.emit("text", {"msg": "Game started!", 'room': room})
-        #set first image
-        self.set_image(room)
+        self.start_game(room)
 
     def on_skip_image(self,data):
         """
@@ -173,7 +176,10 @@ class ChatNamespace(BaseNamespace):
             room = data['user']['latest_room']['id']
             pos = data['coordinates']
             print("mouse click: ({x_pos}, {y_pos}), {user_name}, {element}".format(x_pos=pos['x'],y_pos=pos['y'],user_name=data['user']['name'],element=data['element']))
-            if not game.curr_img: # if image is clicked before game was started
+            if data['element'] == "#startButton":
+                # start game
+                self.start_game(room)
+            elif not game.curr_img: # if image is clicked before game was started
                 return
             elif data['element'] == "#overlayButton":
                 # display target description and return
