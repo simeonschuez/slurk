@@ -31,9 +31,6 @@
           "content": ""
         },
         {
-          "type": "break"
-        },
-        {
             "type": "area",
             "id": "image-wrapper",
             "content": [
@@ -87,11 +84,13 @@
         "display": "inline-block"
     },
     "#current-image": {
-        "z-index": "1"
+        "z-index": "1",
+        "max-width":"100vw",
+        "max-height":"calc(100vh - 150px)"
     },
     "#image-overlay": {
         "background-color": "rgba(0,0,0,1)",
-        "height": "calc(100% - 200px)",
+        "height": "100%",
         "width": "100%",
         "z-index": "2",
         "position": "absolute",
@@ -120,7 +119,8 @@
     "#overlayButton": {
         "height": "50px",
         "width": "50px",
-        "left": "calc(50% - 25px)"
+        "left": "calc(50% - 25px)",
+        "background-color": "white"
     },
     "#replayButton": {
         "left": "17%"
@@ -139,6 +139,9 @@
     },
     "#room":{
         "display": "none"
+    },
+    "audio":{
+        "height":"0px"
     }
   },
   "scripts": {
