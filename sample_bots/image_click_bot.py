@@ -115,7 +115,7 @@ class ChatNamespace(BaseNamespace):
         # mark file as used
         with open(game.json_path, 'w') as outfile:
             # mark json file as used
-#            game.images["used"] = True
+            game.images["used"] = True
             json.dump(game.images, outfile, sort_keys=True, indent=1)
         self.emit("text", {"msg": "Game started!", 'room': room})
         #set first image
@@ -187,6 +187,8 @@ class ChatNamespace(BaseNamespace):
             elif data['element'] == "#replayButton":
                 pass
             elif data['element'] == "#reportButton":
+                pass
+            elif data['element'] == "#fullscreenButton":
                 pass
             elif data['element'] == "confirmReportButton":
                 # skip image

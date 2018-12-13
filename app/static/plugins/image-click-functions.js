@@ -100,8 +100,11 @@ function fullscreenChange () {
     if (gameStarted == true) {
       if (fullscreenStatus() == true) {
         console.log("fullscreen enabled")
+        $("#fullscreen-overlay").fadeOut();
       } else {
         console.log("fullscreen disabled")
+        $("#fullscreen-overlay").fadeIn();
+        $("#fullscreenButton").fadeIn();
       }
     }
 }
@@ -255,6 +258,9 @@ $('.button').click(function(e){
               room: self_room
           });
         }
+    }
+    else if (e.target.id == "fullscreenButton") {
+        enterFullscreen(document.documentElement);
     }
     /* hide startButton if clicked */
     else if (e.target.id == "startButton") {
