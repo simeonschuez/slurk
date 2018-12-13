@@ -13,9 +13,7 @@ var audioFalse = document.getElementById('audio-false');
 let image = document.getElementById("current-image")
 var imgWrapper = document.getElementById('image-wrapper');
 var sidebar = document.getElementById('sidebar');
-
 /* Event listener */
-
 document.addEventListener("fullscreenchange", fullscreenChange );
 // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
 document.addEventListener("mozfullscreenchange", fullscreenChange );
@@ -84,9 +82,27 @@ function closeFullscreen() {
   }
 }
 
+function fullscreenStatus(){
+  if (
+    document.fullscreenElement ||
+    // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
+    document.mozFullScreenElement ||
+    document.webkitFullscreenElement ||
+    document.msFullscreenElement
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function fullscreenChange () {
     if (gameStarted == true) {
-        console.log("fullscreen change, game still running")
+      if (fullscreenStatus() == true) {
+        console.log("fullscreen enabled")
+      } else {
+        console.log("fullscreen disabled")
+      }
     }
 }
 
@@ -152,6 +168,12 @@ socket.on('file_path', function(data) {
 // activate mouse tracking
 trackMovement(trackingArea, 10);
 
+/* add preload and type attributes to audio elements */
+$(".audio").attr({
+  preload:"auto",
+  type:"audio/wav"
+});
+
 // center image if new image is loaded or window is resized
 image.onload = function () {
     getImageScaleFactor(image);
@@ -161,12 +183,6 @@ window.onresize = function () {
     getImageScaleFactor(image);
     centerImage();
 };
-
-/* add preload and type attributes to audio elements */
-$(".audio").attr({
-    preload:"auto",
-    type:"audio/wav"
-});
 
 /* send coordinates on click */
 $("#current-image").click(function(e){
@@ -243,9 +259,6 @@ $('.button').click(function(e){
     /* hide startButton if clicked */
     else if (e.target.id == "startButton") {
         $("#startButton").fadeOut(200);
+        enterFullscreen(document.documentElement);
     }
-});
-
-$("header").click(function(){
-    enterFullscreen(document.documentElement);
 });
