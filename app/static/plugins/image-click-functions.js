@@ -215,7 +215,30 @@ $('.button').click(function(e){
     }
     /* emit log if report button is clicked */
     else if (e.target.id == "reportButton") {
-        logMouseData();
+        if (confirm("Using the report button will be logged! Are you shure you want to proceed?")==true)
+          {
+            socket.emit('log', {
+                type: "mouse_click",
+                element:"confirmReportButton",
+                coordinates:mouse.pos,
+                room: self_room
+            });
+            logMouseData();
+            socket.emit('mousePosition', {
+                type:'click',
+                element:"confirmReportButton",
+                coordinates:mouse.pos,
+                room: self_room
+            });
+          }
+        else {
+          socket.emit('log', {
+              type: "mouse_click",
+              element:"cancelReportButton",
+              coordinates:mouse.pos,
+              room: self_room
+          });
+        }
     }
     /* hide startButton if clicked */
     else if (e.target.id == "startButton") {

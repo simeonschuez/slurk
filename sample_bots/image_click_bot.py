@@ -187,6 +187,8 @@ class ChatNamespace(BaseNamespace):
             elif data['element'] == "#replayButton":
                 pass
             elif data['element'] == "#reportButton":
+                pass
+            elif data['element'] == "confirmReportButton":
                 # skip image
                 game.next_image()
                 self.set_image(room)
