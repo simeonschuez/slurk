@@ -14,13 +14,26 @@ let image = document.getElementById("current-image")
 var imgWrapper = document.getElementById('image-wrapper');
 var sidebar = document.getElementById('sidebar');
 /* Event listener */
+audioDescription.addEventListener("play", emitAudioEvent(audioDescription));
+audioCorrect.addEventListener("play", emitAudioEvent(audioCorrect));
+audioFalse.addEventListener("play", emitAudioEvent(audioFalse));
 document.addEventListener("fullscreenchange", fullscreenChange );
 // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
-document.addEventListener("mozfullscreenchange", fullscreenChange );
-document.addEventListener("webkitfullscreenchange", fullscreenChange );
-document.addEventListener("msfullscreenchange", fullscreenChange );
+document.addEventListener("mozfullscreenchange", fullscreenChange());
+document.addEventListener("webkitfullscreenchange", fullscreenChange());
+document.addEventListener("msfullscreenchange", fullscreenChange());
 
 /* Function definitions */
+
+function emitAudioEvent(element){
+    socket.emit('log', {
+        type: "audio_playback",
+        data: {
+            timestamp:Date.now(),
+            element:"#"+element.id
+        },
+        room: self_room});
+}
 
 function getImageScaleFactor(img) {
     /* returns image scale factor  */
@@ -210,8 +223,11 @@ $("#current-image").click(function(e){
     });
     socket.emit('log', {
         type: "mouse_click",
-        coordinates:mouse.pos,
-        element:"#current-image",
+        data: {
+            timestamp:Date.now(),
+            coordinates:mouse.pos,
+            element:"#current-image"
+        },
         room: self_room});
 });
 
@@ -228,8 +244,11 @@ $('.button').click(function(e){
     });
     socket.emit('log', {
         type: "mouse_click",
-        coordinates:mouse.pos,
-        element:"#"+e.target.id,
+        data: {
+            timestamp:Date.now(),
+            coordinates:mouse.pos,
+            element:"#"+e.target.id
+        },
         room: self_room
     });
     /* if overlay button is clicked: hide overlay and play audio file */
@@ -250,8 +269,11 @@ $('.button').click(function(e){
           {
             socket.emit('log', {
                 type: "mouse_click",
-                element:"confirmReportButton",
-                coordinates:mouse.pos,
+                data: {
+                    timestamp:Date.now(),
+                    element:"confirmReportButton",
+                    coordinates:mouse.pos
+                },
                 room: self_room
             });
             logMouseData();
@@ -265,8 +287,11 @@ $('.button').click(function(e){
         else {
           socket.emit('log', {
               type: "mouse_click",
-              element:"cancelReportButton",
-              coordinates:mouse.pos,
+              data: {
+                  timestamp:Date.now(),
+                  element:"cancelReportButton",
+                  coordinates:mouse.pos
+              },
               room: self_room
           });
         }
