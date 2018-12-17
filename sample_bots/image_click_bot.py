@@ -115,9 +115,10 @@ class ChatNamespace(BaseNamespace):
         # mark file as used
         with open(game.json_path, 'w') as outfile:
             # mark json file as used
-            game.images["used"] = True
+            #game.images["used"] = True
             json.dump(game.images, outfile, sort_keys=True, indent=1)
         self.emit("text", {"msg": "Game started!", 'room': room})
+        self.emit('log', {'type': 'message', 'msg': 'json file: ' + os.path.basename(game.json_path),'room': room})
         #set first image
         self.set_image(room)
 

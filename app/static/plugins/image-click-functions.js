@@ -23,93 +23,105 @@ document.addEventListener("msfullscreenchange", fullscreenChange );
 /* Function definitions */
 
 function getImageScaleFactor(img) {
-  scaleFactor.x = img.width / img.naturalWidth;
-  scaleFactor.y = img.height / img.naturalHeight;
+    /* returns image scale factor  */
+    scaleFactor.x = img.width / img.naturalWidth;
+    scaleFactor.y = img.height / img.naturalHeight;
 }
 
 function getPosition (evt, area) {
+    /* assign current mouse position within an area to mouse.pos */
     position = $(area).offset();
     mouse.pos.x = (evt.clientX - position.left) / scaleFactor.x;
     mouse.pos.y = (evt.clientY - position.top) / scaleFactor.y;
 }
 
-function emitPosition(a, intrvl) {
-  if (mouse.move) {
-      mousePositions.push({
-          timestamp:Date.now(),
-          x:mouse.pos.x,
-          y:mouse.pos.y
+function storePosition(a, intrvl) {
+    /* add the current mouse position to the array mousePositions */
+    if (mouse.move) {
+        mousePositions.push({
+            timestamp:Date.now(),
+            x:mouse.pos.x,
+            y:mouse.pos.y
         });
-      mouse.move = false;
-  }
+        mouse.move = false;
+    }
 }
 
 function trackMovement(area,interval) {
+    /* get cursor position on movement within a defined area
+    and store positions in a defined interval */
     $(area).mousemove(function(e){
         getPosition(e, area);
         mouse.move = true;
     });
-    setInterval(emitPosition,interval,area)
+    setInterval(storePosition,interval,area)
 }
 
 function centerImage() {
+    /* horizontally center image */
     imgWrapper.style.left = ((sidebar.offsetWidth/2)-(imgWrapper.offsetWidth/2));
 }
 
 function enterFullscreen(element) {
-  if(element.requestFullscreen) {
-    element.requestFullscreen();
-    // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
-  } else if(element.mozRequestFullScreen) {
-    element.mozRequestFullScreen();
-  } else if(element.webkitRequestFullscreen) {
-    element.webkitRequestFullscreen();
-  } else if(element.msRequestFullscreen) {
-    element.msRequestFullscreen();
-  }
+    /* request fullscreen mode */
+    if(element.requestFullscreen) {
+        element.requestFullscreen();
+        // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
+    } else if(element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+    } else if(element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+    } else if(element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+    }
 }
 
 function closeFullscreen() {
-  if (document.exitFullscreen) {
-    document.exitFullscreen();
-    // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
-  } else if (document.mozCancelFullScreen) {
-    document.mozCancelFullScreen();
-  } else if (document.webkitExitFullscreen) {
-    document.webkitExitFullscreen();
-  } else if (document.msExitFullscreen) {
-    document.msExitFullscreen();
-  }
+    /* disable fullscreen mode */
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+        // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
+    } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+    }
 }
 
 function fullscreenStatus(){
-  if (
-    document.fullscreenElement ||
-    // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
-    document.mozFullScreenElement ||
-    document.webkitFullscreenElement ||
-    document.msFullscreenElement
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+    /* return true if browser is in fullscreen mode */
+    if (
+        document.fullscreenElement ||
+        // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
+        document.mozFullScreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement
+    ) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function fullscreenChange () {
+    /* display overlay if user disables fullscreen mode and game has started */
     if (gameStarted == true) {
-      if (fullscreenStatus() == true) {
-        console.log("fullscreen enabled")
-        $("#fullscreen-overlay").fadeOut();
-      } else {
-        console.log("fullscreen disabled")
-        $("#fullscreen-overlay").fadeIn();
-        $("#fullscreenButton").fadeIn();
-      }
+        if (fullscreenStatus() == true) {
+            console.log("fullscreen enabled")
+            $("#fullscreen-overlay").fadeOut();
+        } else {
+            console.log("fullscreen disabled")
+            $("#fullscreen-overlay").fadeIn();
+            $("#fullscreenButton").fadeIn();
+        }
     }
 }
 
 function logMouseData() {
+    /* dispay image overlay and emit all mouse positions collected
+    for the current image */
     $("#image-overlay").fadeIn(200);
     $(".img-button").fadeOut(200);
     console.log("logging tracking data");
