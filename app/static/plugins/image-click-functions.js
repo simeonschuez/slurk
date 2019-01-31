@@ -14,9 +14,9 @@ let image = document.getElementById("current-image")
 var imgWrapper = document.getElementById('image-wrapper');
 var sidebar = document.getElementById('sidebar');
 /* Event listener */
-audioDescription.addEventListener("play", emitAudioEvent(audioDescription));
-audioCorrect.addEventListener("play", emitAudioEvent(audioCorrect));
-audioFalse.addEventListener("play", emitAudioEvent(audioFalse));
+audioDescription.addEventListener("play", function(){emitAudioEvent(audioDescription)}, false);
+audioCorrect.addEventListener("play", function(){emitAudioEvent(audioCorrect)}, false);
+audioFalse.addEventListener("play", function(){emitAudioEvent(audioFalse)}, false);
 document.addEventListener("fullscreenchange", fullscreenChange );
 // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
 document.addEventListener("mozfullscreenchange", fullscreenChange());
@@ -26,6 +26,7 @@ document.addEventListener("msfullscreenchange", fullscreenChange());
 /* Function definitions */
 
 function emitAudioEvent(element){
+    /* write log entry if audio file is played */
     socket.emit('log', {
         type: "audio_playback",
         data: {
@@ -36,7 +37,7 @@ function emitAudioEvent(element){
 }
 
 function getImageScaleFactor(img) {
-    /* returns image scale factor  */
+    /* return image scale factor  */
     scaleFactor.x = img.width / img.naturalWidth;
     scaleFactor.y = img.height / img.naturalHeight;
 }
