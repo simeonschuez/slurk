@@ -9,6 +9,8 @@ from socketIO_client import SocketIO, BaseNamespace
 chat_namespace = None
 users = {}
 self_id = None
+class zoom_status:
+    level = 1
 
 def add_user(room, id):
     global users
@@ -76,18 +78,26 @@ class ChatNamespace(BaseNamespace):
             self.emit('join_room', {'room': 1, 'user': user})
         self.emit('leave_room', {'room': data['room']['id']})
 
+
+    def on_mouse_position(self, data):
+        print ("mouse click:", data['coordinates'], 'zoom level:', zoom_status.level)
+
+    def on_image_modification(self, data):
+        if data['type'] == 'zoom':
+            pass
+
     def on_zoom(self, data):
-        zoom_level = randint(2,5)
+        zoom_status.level = randint(2,5)
         x_pos = randint(0,500)
         y_pos = randint(0,400)
         self.emit('modifyImage', {
             'type':'zoom',
             'parameters':{
                 'focus':{'x': x_pos, 'y': y_pos},
-                'zoom_level': zoom_level},
+                'zoom_level': zoom_status.level},
             'room': data['room']['id']
             })
-        print ("Zoom\nposition: [{x},{y}]; zoom-level: {zlevel}".format(x=x_pos, y=y_pos, zlevel=zoom_level))
+        print ("Zoom\nposition: [{x},{y}]; zoom-level: {zlevel}".format(x=x_pos, y=y_pos, zlevel=zoom_status.level))
 
 class LoginNamespace(BaseNamespace):
     @staticmethod

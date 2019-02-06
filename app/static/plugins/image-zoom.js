@@ -47,14 +47,24 @@ function zoomImage(zoom, position) {
   img.style.backgroundPosition = "-"+offset.x.toString()+"px -"+offset.y.toString()+"px";
 
   // log into console
-  console.log("zoom:", zoom, "width:", img.width, "height:",img.height,"bgWidth:", bgWidth, "bgHeight:", bgHeight,"position:", position, "offset.x:",offset.x, "offset.y:", offset.y);
+  //console.log("zoom:", zoom, "width:", img.width, "height:",img.height,"bgWidth:", bgWidth, "bgHeight:", bgHeight,"position:", position, "offset.x:",offset.x, "offset.y:", offset.y);
+}
+
+function calcPos(evt, zoom, offset) {
+  /*
+    calculate the current mouse position, given a click event, a zoom level and the image offset
+  */
+  var pos = $("#current-image").offset();
+  var y = ((offset.y + (evt.clientY - pos.top))/zoom);
+  var x = ((offset.x + (evt.clientX - pos.left))/zoom);
+  return ({x:x,y:y})
 }
 
 initBgImage();
 
 // call zoomImage on image_modification event of type 'zoom' with event data
 socket.on('image_modification', function(data) {
-    console.log(data);
+    //console.log(data);
     if (data['type'] == 'zoom'){
         zoomLevel = data['parameters']['zoom_level'];
         focus = data['parameters']['focus'];
@@ -70,11 +80,19 @@ $("#current-image").mousemove(function(e){
   var pos = $("#current-image").offset();
   var x = e.clientX - pos.left;
   var y = e.clientY - pos.top;
-  console.log(x,y);
-    zoomImage(zoomLevel, {x:x, y:y});
+  //console.log(x,y);
+  //zoomImage(zoomLevel, {x:x, y:y});
 });
 
+$("#current-image").click(function(e){
+  console.log(calcPos(e,zoomLevel,offset), offset, zoomLevel);
+  socket.emit('mousePosition', {
+    type:'click',
+    element:"#current-image",
+    coordinates:calcPos(e,zoomLevel,offset),
+    room:self_room
+  });
+});
 
 // nutzer verschiebt viewport -> daten an bot
 // smoothe bewegung an zielort
-// koordinaten (bezogen auf originalbild) bei mausklick
