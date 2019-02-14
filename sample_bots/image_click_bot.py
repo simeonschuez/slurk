@@ -184,7 +184,7 @@ class ChatNamespace(BaseNamespace):
                 return
             elif data['element'] == "#overlayButton":
                 # display target description and return
-                self.emit("text", {"msg": "#nodisplay# Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
+                self.emit("text", {"msg": "Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
             elif data['element'] == "#replayButton":
                 pass
             elif data['element'] == "#reportButton":
@@ -196,13 +196,13 @@ class ChatNamespace(BaseNamespace):
                 game.next_image()
                 self.set_image(room)
             elif game.click_on_target(pos):
-                self.emit("text", {"msg": "#nodisplay# Correct!", 'room': room})
+                self.emit("text", {"msg": "Correct!", 'room': room})
                 time.sleep(0.3)
                 game.next_image()
                 self.set_image(room)
             else:
                 # display message if click was off target
-                self.emit("text", {"msg": "#nodisplay# Try again!", 'room': room})
+                self.emit("text", {"msg": "Try again!", 'room': room})
 
 class LoginNamespace(BaseNamespace):
     @staticmethod

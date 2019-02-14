@@ -145,36 +145,37 @@ function logMouseData() {
 
 /* Socket events */
 
+/* actions depending on incoming message */
 socket.on('message', function(data) {
     if (data.user.name == "Image_Click_Bot") {
-        console.log("message from image click bot")
-        if (data.msg.includes("Correct!")) {
-            // play audio, log tracking data, show overlay
-            audioCorrect.play();
-            logMouseData();
-        } else if (data.msg.includes("Try again!")) {
-            audioFalse.play();
-        } else if (data.msg.includes("Game started!")) {
-            gameStarted = true;
-            audioCorrect.src="/static/audio/correct.wav";
-            audioFalse.src="/static/audio/tryagain.wav";
-            console.log("game started:", gameStarted);
-        } else if (data.msg.includes("No images left")) {
-            closeFullscreen(); /* Exit fullscreen */
-            gameStarted = false;
-            $(".overlay").hide();
-            console.log("game started:", gameStarted);
+        console.log("message from image click bot: ", data.msg)
+        switch(data.msg) {
+            case "Correct!":
+                // play audio, log tracking data, show overlay
+                audioCorrect.play();
+                logMouseData();
+                break;
+            case "Try again!":
+                audioFalse.play();
+                break;
+            case "Game started!":
+                gameStarted = true;
+                audioCorrect.src="/static/audio/correct.wav";
+                audioFalse.src="/static/audio/tryagain.wav";
+                console.log("game started:", gameStarted);
+                break;
+            case "No images left":
+                closeFullscreen();
+                gameStarted = false;
+                $(".overlay").hide();
+                console.log("game started:", gameStarted);
+                break;
         }
     }
-
-    // display / hide messages
+    // return if message is from client
     if (self_user.id == data.user.id) return;
     if (data["image"] !== undefined) {
         display_image(data.user, data.timestamp, data.image, data.width, data.height, data.privateMessage);
-    } else {
-        if (!((data.user.name == "Image_Click_Bot")&&data.msg.startsWith("#nodisplay#"))) {
-        display_message(data.user, data.timestamp, data.msg, data.privateMessage);
-        }
     }
 });
 
@@ -252,57 +253,60 @@ $('.button').click(function(e){
         },
         room: self_room
     });
-    /* if overlay button is clicked: hide overlay and play audio file */
-    if (e.target.id == "overlayButton") {
-        $(".overlay").fadeOut(200);
-        $(".img-button").fadeIn(200);
-        /* play transmitted audio file after 500 ms */
-        setTimeout(function(){
-            audioDescription.play();}, 500);
-    }
-    /* play audio if replay button is clicked */
-    else if (e.target.id == "replayButton") {
-        audioDescription.play();
-    }
-    /* emit log if report button is clicked */
-    else if (e.target.id == "reportButton") {
-        if (confirm("Using the report button will be logged! Are you shure you want to proceed?")==true)
-          {
-            socket.emit('log', {
-                type: "mouse_click",
-                data: {
-                    timestamp:Date.now(),
+    /* button action depending on id */
+    switch(e.target.id) {
+        /* overlay button: hide overlay, show image buttons and play audio file */
+        case "overlayButton":
+            $(".overlay").fadeOut(200);
+            $(".img-button").fadeIn(200);
+            /* play transmitted audio file after 500 ms */
+            setTimeout(function(){
+                audioDescription.play();}, 500);
+            break;
+        /* replay button: play audio */
+        case "replayButton":
+            audioDescription.play();
+            break;
+        /* report button: ask client to confirm; write to log; emit mouse data */
+        case "reportButton":
+            if (confirm("Using the report button will be logged! Are you shure you want to proceed?")==true){
+                socket.emit('log', {
+                    type: "mouse_click",
+                    data: {
+                        timestamp:Date.now(),
+                        element:"confirmReportButton",
+                        coordinates:mouse.pos
+                    },
+                    room: self_room
+                });
+                logMouseData();
+                socket.emit('mousePosition', {
+                    type:'click',
                     element:"confirmReportButton",
-                    coordinates:mouse.pos
-                },
-                room: self_room
-            });
-            logMouseData();
-            socket.emit('mousePosition', {
-                type:'click',
-                element:"confirmReportButton",
-                coordinates:mouse.pos,
-                room: self_room
-            });
-          }
-        else {
-          socket.emit('log', {
-              type: "mouse_click",
-              data: {
-                  timestamp:Date.now(),
-                  element:"cancelReportButton",
-                  coordinates:mouse.pos
-              },
-              room: self_room
-          });
-        }
-    }
-    else if (e.target.id == "fullscreenButton") {
-        enterFullscreen(document.documentElement);
-    }
-    /* hide startButton if clicked */
-    else if (e.target.id == "startButton") {
-        $("#startButton").fadeOut(200);
-        enterFullscreen(document.documentElement);
+                    coordinates:mouse.pos,
+                    room: self_room
+                });
+              }
+            else {
+              socket.emit('log', {
+                  type: "mouse_click",
+                  data: {
+                      timestamp:Date.now(),
+                      element:"cancelReportButton",
+                      coordinates:mouse.pos
+                  },
+                  room: self_room
+              });
+            }
+            break;
+        /* fullscreen button: enter fullscreen mode */
+        case "fullscreenButton":
+            enterFullscreen(document.documentElement);
+            break;
+        /* start button: hide startButton; enter fullscreen mode */
+        case "startButton":
+            $("#startButton").fadeOut(200);
+            enterFullscreen(document.documentElement);
+            break;
     }
 });
