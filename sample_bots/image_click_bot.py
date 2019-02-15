@@ -25,6 +25,9 @@ class Game:
         self.audio_path = "/static/audio/"
 
     def get_json(self, dir):
+        """
+        search for unused json files, store content in game instance attributes
+        """
         cwd = os.getcwd()+"/"
         # find json files in directory
         for file in [f for f in os.listdir(cwd+dir) if f.endswith(".json")]:
@@ -37,27 +40,37 @@ class Game:
                     self.started, self.pointer = True, 0
                     return
                 print("File {name} was already used.".format(name=file))
+        # if no unused json files were found
         self.images = False
         self.json_path = False
 
     def get_image(self):
+        """
+        iterate through keys in current json file,
+        if key corresponds to current state of self.pointer: set value as self.curr_img
+        """
         for entry in self.images:
             if entry == str(self.pointer):
                 self.curr_img = self.images[entry]
                 return
-        self.curr_img = False # if self.pointer exeeds the highest id
+        # if self.pointer exeeds the highest id
+        self.curr_img = False
 
     def next_image(self):
+        """
+        increment value of self.pointer by 1,
+        call get_image method to retrieve data for next image
+        """
         self.pointer += 1
         self.get_image()
 
     def click_on_target(self, click):
+        """
+        retrieve bounding box information from self.curr_img,
+        check whether click is located within that bounding box
+        """
         bb = self.curr_img["bb"]
-
-        x = int(bb[0])
-        y = int(bb[1])
-        width = int(bb[2])
-        height = int(bb[3])
+        x,y,width,height = int(bb[0]),int(bb[1]),int(bb[2]),int(bb[3])
 
         if int(click['x']) in range(x, x+width+1) and int(click['y']) in range(y, y+height+1):
             return True
@@ -94,6 +107,9 @@ class ChatNamespace(BaseNamespace):
             self.emit("text", {"msg": "No images left", 'room': room})
             game.started = False
             #thank you image
+            ##########################
+            # GENERATE + PRINT TOKEN #
+            ##########################
             self.emit('command', {'room': room,
             'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
 
@@ -176,11 +192,15 @@ class ChatNamespace(BaseNamespace):
         if data['type'] == 'click':
             room = data['user']['latest_room']['id']
             pos = data['coordinates']
+
             print("mouse click: ({x_pos}, {y_pos}), {user_name}, {element}".format(x_pos=pos['x'],y_pos=pos['y'],user_name=data['user']['name'],element=data['element']))
+
+            # check whether client clicked on button
             if data['element'] == "#startButton":
                 # start game
                 self.start_game(room)
-            elif not game.curr_img: # if image is clicked before game was started
+            elif not game.curr_img:
+                # if image is clicked before game was started
                 return
             elif data['element'] == "#overlayButton":
                 # display target description and return
@@ -195,13 +215,15 @@ class ChatNamespace(BaseNamespace):
                 # skip image
                 game.next_image()
                 self.set_image(room)
+
+            # if no button was clicked: check if client clicked on target
             elif game.click_on_target(pos):
                 self.emit("text", {"msg": "Correct!", 'room': room})
                 time.sleep(0.3)
                 game.next_image()
                 self.set_image(room)
+            # display message if click was off target
             else:
-                # display message if click was off target
                 self.emit("text", {"msg": "Try again!", 'room': room})
 
 class LoginNamespace(BaseNamespace):
