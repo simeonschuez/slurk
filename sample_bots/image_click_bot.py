@@ -5,8 +5,9 @@ import sys
 import os
 import json
 import time
+import random
+import string
 
-from random import randint
 from socketIO_client import SocketIO, BaseNamespace
 
 chat_namespace = None
@@ -90,7 +91,8 @@ def add_user(room, id):
         users[room] = []
     users[room].append(id)
 
-
+def generate_token(len):
+    return (''.join(random.choices(string.ascii_letters + string.digits, k=len)))
 
 class ChatNamespace(BaseNamespace):
 
@@ -106,10 +108,11 @@ class ChatNamespace(BaseNamespace):
             # return message if no images are left
             self.emit("text", {"msg": "No images left", 'room': room})
             game.started = False
+
+            amt_token = generate_token(16)
+            self.emit("text", {"msg": "Here's your token: {token}".format(token=amt_token), 'room': room})
+
             #thank you image
-            ##########################
-            # GENERATE + PRINT TOKEN #
-            ##########################
             self.emit('command', {'room': room,
             'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
 
@@ -205,16 +208,11 @@ class ChatNamespace(BaseNamespace):
             elif data['element'] == "#overlayButton":
                 # display target description and return
                 self.emit("text", {"msg": "Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
-            elif data['element'] == "#replayButton":
-                pass
-            elif data['element'] == "#reportButton":
-                pass
-            elif data['element'] == "#fullscreenButton":
-                pass
             elif data['element'] == "confirmReportButton":
                 # skip image
                 game.next_image()
                 self.set_image(room)
+            # other buttons: #replayButton, #reportButton, #fullscreenButton
 
             # if no button was clicked: check if client clicked on target
             elif game.click_on_target(pos):

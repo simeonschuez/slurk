@@ -6,6 +6,7 @@ import os
 import json
 import time
 import random
+import string
 
 from socketIO_client import SocketIO, BaseNamespace
 
@@ -35,7 +36,7 @@ class Game:
         with open(self.json_path, "r")  as raw_jfile:
             jfile = json.load(raw_jfile)
             n = 5
-            self.images = {str(i):jfile[str(j)] for i,j in zip(range(n),random.sample(list(range(9)),n))}
+            self.images = {str(i):jfile[str(j)] for i,j in zip(range(n),random.choices(list(range(9)),k=n))}
             self.started, self.pointer = True, 0
 
     def get_image(self):
@@ -65,10 +66,6 @@ class Game:
         """
         bb = self.curr_img["bb"]
         x,y,width,height = int(bb[0]),int(bb[1]),int(bb[2]),int(bb[3])
-        #x = int(bb[0])
-        #y = int(bb[1])
-        #width = int(bb[2])
-        #height = int(bb[3])
 
         if int(click['x']) in range(x, x+width+1) and int(click['y']) in range(y, y+height+1):
             return True
@@ -88,7 +85,8 @@ def add_user(room, id):
         users[room] = []
     users[room].append(id)
 
-
+def generate_token(len):
+    return (''.join(random.choices(string.ascii_letters + string.digits, k=len)))
 
 class ChatNamespace(BaseNamespace):
 
@@ -104,10 +102,10 @@ class ChatNamespace(BaseNamespace):
             # return message if no images are left
             self.emit("text", {"msg": "No images left", 'room': room})
             game.started = False
+            amt_token = generate_token(16)
+            self.emit("text", {"msg": "Here's your token: {token}".format(token=amt_token), 'room': room})
+
             #thank you image
-            ##########################
-            # GENERATE + PRINT TOKEN #
-            ##########################
             self.emit('command', {'room': room,
             'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
 
@@ -199,16 +197,11 @@ class ChatNamespace(BaseNamespace):
             elif data['element'] == "#overlayButton":
                 # display target description and return
                 self.emit("text", {"msg": "Please click on the {d_name}.".format(d_name=game.curr_img["refexp"]), 'room': room})
-            elif data['element'] == "#replayButton":
-                pass
-            elif data['element'] == "#reportButton":
-                pass
-            elif data['element'] == "#fullscreenButton":
-                pass
             elif data['element'] == "confirmReportButton":
                 # skip image
                 game.next_image()
                 self.set_image(room)
+            # other buttons : #replayButton, #reportButton, #fullscreenButton
 
             # if no button was clicked: check if client clicked on target
             elif game.click_on_target(pos):
