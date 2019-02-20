@@ -23,6 +23,10 @@ document.addEventListener("mozfullscreenchange", fullscreenChange());
 document.addEventListener("webkitfullscreenchange", fullscreenChange());
 document.addEventListener("msfullscreenchange", fullscreenChange());
 
+window.addEventListener('touchstart', function() {
+  console.log('user touched the screen!')
+});
+
 /* Function definitions */
 
 function emitAudioEvent(element){
@@ -147,7 +151,7 @@ function logMouseData() {
 
 /* actions depending on incoming message */
 socket.on('message', function(data) {
-    if (data.user.name == "Image_Click_Bot") {
+    if (data.user.name == "ImageClick_Main" || data.user.name == "ImageClick_Pretest") {
         console.log("message from image click bot: ", data.msg)
         switch(data.msg) {
             case "Correct!":

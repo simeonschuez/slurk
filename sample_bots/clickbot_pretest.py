@@ -19,6 +19,7 @@ class Game:
     def __init__(self):
         self.images = False
         self.pointer = False
+        self.mistakes = False
         self.curr_img = False
         self.started = False
         self.json_path = False
@@ -35,7 +36,7 @@ class Game:
 
         with open(self.json_path, "r")  as raw_jfile:
             jfile = json.load(raw_jfile)
-            n = 5
+            n = 1
             self.images = {str(i):jfile[str(j)] for i,j in zip(range(n),random.choices(list(range(9)),k=n))}
             self.started, self.pointer = True, 0
 
@@ -100,14 +101,14 @@ class ChatNamespace(BaseNamespace):
             self.emit('transferFilePath', {'type':'audio','file':game.audio_path+game.curr_img['audio_filename'], 'room': room})
         else:
             # return message if no images are left
-            self.emit("text", {"msg": "No images left", 'room': room})
+            time.sleep(1)
             game.started = False
-            amt_token = generate_token(16)
-            self.emit("text", {"msg": "Here's your token: {token}".format(token=amt_token), 'room': room})
+            print ("mistakes: ",game.mistakes)
+            self.emit("text", {"msg": "start_game", 'room': room})
+            #self.emit("text", {"msg": "No images left", 'room': room})
 
-            #thank you image
-            self.emit('command', {'room': room,
-            'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
+            #amt_token = generate_token(16)
+            #self.emit("text", {"msg": "Here's your token: {token}".format(token=amt_token), 'room': room})
 
     def start_game(self,room):
         """
@@ -123,6 +124,7 @@ class ChatNamespace(BaseNamespace):
         if game.images == False:
             print ("no json files left in directory")
             return
+        game.mistakes = 0;
         game.get_image()
         # mark file as used
         self.emit("text", {"msg": "Game started!", 'room': room})
@@ -157,12 +159,7 @@ class ChatNamespace(BaseNamespace):
         room = data['room']
         print("Joining room", room['name'])
         self.emit('join_task', {'room': room['id']})
-        self.emit("command", {'room': room['id'], 'data': ['listen_to', 'start_game']})
         self.emit("command", {'room': room['id'], 'data': ['listen_to', 'skip_image']})
-
-    def on_start_game(self,data):
-        room = data['room']['id']
-        self.start_game(room)
 
     def on_skip_image(self,data):
         """
@@ -201,7 +198,10 @@ class ChatNamespace(BaseNamespace):
                 # skip image
                 game.next_image()
                 self.set_image(room)
-            # other buttons : #replayButton, #reportButton, #fullscreenButton
+
+            elif data['element'] in ['#replayButton', '#reportButton', '#fullscreenButton']:
+                # do nothing
+                pass
 
             # if no button was clicked: check if client clicked on target
             elif game.click_on_target(pos):
@@ -212,6 +212,7 @@ class ChatNamespace(BaseNamespace):
             # display message if click was off target
             else:
                 self.emit("text", {"msg": "Try again!", 'room': room})
+                game.mistakes += 1
 
 class LoginNamespace(BaseNamespace):
     @staticmethod
@@ -239,5 +240,5 @@ if __name__ == '__main__':
 
     with SocketIO(args.chat_host, args.chat_port) as socketIO:
         login_namespace = socketIO.define(LoginNamespace, '/login')
-        login_namespace.emit('connectWithToken', {'token': args.token, 'name': "Image_Click_Bot"})
+        login_namespace.emit('connectWithToken', {'token': args.token, 'name': "ImageClick_Pretest"})
         socketIO.wait()

@@ -168,12 +168,15 @@ class ChatNamespace(BaseNamespace):
         room = data['room']
         print("Joining room", room['name'])
         self.emit('join_task', {'room': room['id']})
-        self.emit("command", {'room': room['id'], 'data': ['listen_to', 'start_game']})
         self.emit("command", {'room': room['id'], 'data': ['listen_to', 'skip_image']})
 
-    def on_start_game(self,data):
-        room = data['room']['id']
-        self.start_game(room)
+    def on_message(self, data):
+        # prevent parroting own messages
+        if data["user"]["name"] == "ImageClick_Pretest":
+            message = data['msg']
+            room = data["user"]["latest_room"]["id"]
+            if message == 'start_game':
+                self.start_game(room)
 
     def on_skip_image(self,data):
         """
@@ -201,7 +204,8 @@ class ChatNamespace(BaseNamespace):
             # check whether client clicked on button
             if data['element'] == "#startButton":
                 # start game
-                self.start_game(room)
+                #self.start_game(room)
+                pass
             elif not game.curr_img:
                 # if image is clicked before game was started
                 return
@@ -250,5 +254,5 @@ if __name__ == '__main__':
 
     with SocketIO(args.chat_host, args.chat_port) as socketIO:
         login_namespace = socketIO.define(LoginNamespace, '/login')
-        login_namespace.emit('connectWithToken', {'token': args.token, 'name': "Image_Click_Bot"})
+        login_namespace.emit('connectWithToken', {'token': args.token, 'name': "ImageClick_Main"})
         socketIO.wait()
