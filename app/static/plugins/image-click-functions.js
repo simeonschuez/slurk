@@ -13,17 +13,20 @@ var audioFalse = document.getElementById('audio-false');
 let image = document.getElementById("current-image")
 var imgWrapper = document.getElementById('image-wrapper');
 var sidebar = document.getElementById('sidebar');
+
 /* Event listener */
+
 audioDescription.addEventListener("play", function(){emitAudioEvent(audioDescription)}, false);
 audioCorrect.addEventListener("play", function(){emitAudioEvent(audioCorrect)}, false);
 audioFalse.addEventListener("play", function(){emitAudioEvent(audioFalse)}, false);
+
 document.addEventListener("fullscreenchange", fullscreenChange );
-// cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
-document.addEventListener("mozfullscreenchange", fullscreenChange());
-document.addEventListener("webkitfullscreenchange", fullscreenChange());
-document.addEventListener("msfullscreenchange", fullscreenChange());
+document.addEventListener("mozfullscreenchange", fullscreenChange()); // Firefox
+document.addEventListener("webkitfullscreenchange", fullscreenChange()); // Safari/Opera
+document.addEventListener("msfullscreenchange", fullscreenChange()); // IE/Edge
 
 window.addEventListener('touchstart', function() {
+    /* write log entry if user uses touch */
   socket.emit('log', {
       type: "touch_event",
       data: {
@@ -166,6 +169,9 @@ socket.on('message', function(data) {
                 break;
             case "Try again!":
                 audioFalse.play();
+                break;
+            case "Skipping Image":
+                logMouseData();
                 break;
             case "Game started!":
                 gameStarted = true;

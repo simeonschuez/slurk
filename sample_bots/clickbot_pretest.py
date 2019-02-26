@@ -20,6 +20,7 @@ class Game:
         self.images = False
         self.pointer = False
         self.mistakes = False
+        self.image_mistakes = False
         self.curr_img = False
         self.started = False
         self.json_path = False
@@ -36,7 +37,8 @@ class Game:
 
         with open(self.json_path, "r")  as raw_jfile:
             jfile = json.load(raw_jfile)
-            n = 1
+            # number of images
+            n = 5
             self.images = {str(i):jfile[str(j)] for i,j in zip(range(n),random.choices(list(range(9)),k=n))}
             self.started, self.pointer = True, 0
 
@@ -58,6 +60,7 @@ class Game:
         call get_image method to retrieve data for next image
         """
         self.pointer += 1
+        self.image_mistakes = 0
         self.get_image()
 
     def click_on_target(self, click):
@@ -214,6 +217,12 @@ class ChatNamespace(BaseNamespace):
             else:
                 self.emit("text", {"msg": "Try again!", 'room': room})
                 game.mistakes += 1
+                game.image_mistakes += 1
+                # if user needs to many tries for current image
+                if game.image_mistakes >= 5:
+                    self.emit("text", {"msg": "Skipping Image", 'room': room})
+                    game.next_image()
+
 
 class LoginNamespace(BaseNamespace):
     @staticmethod
