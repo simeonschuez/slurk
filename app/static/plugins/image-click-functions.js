@@ -24,7 +24,12 @@ document.addEventListener("webkitfullscreenchange", fullscreenChange());
 document.addEventListener("msfullscreenchange", fullscreenChange());
 
 window.addEventListener('touchstart', function() {
-  console.log('user touched the screen!')
+  socket.emit('log', {
+      type: "touch_event",
+      data: {
+          timestamp:Date.now()
+      },
+      room: self_room});
 });
 
 /* Function definitions */

@@ -104,11 +104,12 @@ class ChatNamespace(BaseNamespace):
             time.sleep(1)
             game.started = False
             print ("mistakes: ",game.mistakes)
-            self.emit("text", {"msg": "start_game", 'room': room})
+            if game.mistakes <= 5:
+                self.emit("text", {"msg": "start_game", 'room': room})
+            else:
+                amt_token = generate_token(14)+"01"
+                self.emit("text", {"msg": "Here's your token: {token}".format(token=amt_token), 'room':room})
             #self.emit("text", {"msg": "No images left", 'room': room})
-
-            #amt_token = generate_token(16)
-            #self.emit("text", {"msg": "Here's your token: {token}".format(token=amt_token), 'room': room})
 
     def start_game(self,room):
         """

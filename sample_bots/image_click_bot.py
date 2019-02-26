@@ -109,7 +109,7 @@ class ChatNamespace(BaseNamespace):
             self.emit("text", {"msg": "No images left", 'room': room})
             game.started = False
 
-            amt_token = generate_token(16)
+            amt_token = generate_token(14)+"02"
             self.emit("text", {"msg": "Here's your token: {token}".format(token=amt_token), 'room': room})
 
             #thank you image
