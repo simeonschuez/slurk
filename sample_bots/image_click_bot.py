@@ -101,9 +101,20 @@ class ChatNamespace(BaseNamespace):
         emit new_image command if there are images left
         """
         if game.curr_img:
-            self.emit('command', {'room': room,
-            'data': ['new_image', game.img_path+game.curr_img["image_filename"]]})
-            self.emit('transferFilePath', {'type':'audio','file':game.audio_path+game.curr_img['audio_filename'], 'room': room})
+            # new image
+            self.emit('set_attribute', {
+            'room': room,
+            'id': "current-image",
+            'attribute': "src",
+            'value': game.img_path+game.curr_img["image_filename"]
+            })
+            # new audio file
+            self.emit('set_attribute', {
+            'room': room,
+            'id': "audio-description",
+            'attribute': "src",
+            'value': game.audio_path+game.curr_img['audio_filename']
+            })
         else:
             # return message if no images are left
             self.emit("text", {"msg": "No images left", 'room': room})
@@ -113,8 +124,12 @@ class ChatNamespace(BaseNamespace):
             self.emit("text", {"msg": "Here's your token: {token}".format(token=amt_token), 'room': room})
 
             #thank you image
-            self.emit('command', {'room': room,
-            'data': ['new_image', "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png"]})
+            self.emit('set_attribute', {
+            'room': room,
+            'id': "current-image",
+            'attribute': "src",
+            'value': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png'
+            })
 
     def start_game(self,room):
         """

@@ -1,3 +1,5 @@
+console.log('image_click_functions active')
+
 let gameStarted = false;
 let trackingArea = "#current-image"
 let mouse = {
@@ -194,21 +196,15 @@ socket.on('message', function(data) {
     }
 });
 
-socket.on('new_image', function(data) {
+socket.on('attribute_update', function(data) {
     //set_image(data['url']);
     console.log("new image:",data,"Game started:",gameStarted)
-    if (gameStarted==true) {
+    if (gameStarted==true && data.id == 'audio-description') {
         /* show overlay and hide replayButton if new image is recieved */
         $(".overlay").show();
         $(".img-button").hide();
     }
   });
-
-socket.on('file_path', function(data) {
-    if (data.type == 'audio') {
-        audioDescription.src = data.file;
-    }
-});
 
 // activate mouse tracking
 trackMovement(trackingArea, 10);

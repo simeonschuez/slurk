@@ -99,9 +99,21 @@ class ChatNamespace(BaseNamespace):
         emit new_image command if there are images left
         """
         if game.curr_img:
-            self.emit('command', {'room': room,
-            'data': ['new_image', game.img_path+game.curr_img["image_filename"]]})
-            self.emit('transferFilePath', {'type':'audio','file':game.audio_path+game.curr_img['audio_filename'], 'room': room})
+            # new image
+            self.emit('set_attribute', {
+            'room': room,
+            'id': "current-image",
+            'attribute': "src",
+            'value': game.img_path+game.curr_img["image_filename"]
+            })
+            # new audio file
+            self.emit('set_attribute', {
+            'room': room,
+            'id': "audio-description",
+            'attribute': "src",
+            'value': game.audio_path+game.curr_img['audio_filename']
+            })
+#            self.emit('transferFilePath', {'type':'audio','file':game.audio_path+game.curr_img['audio_filename'], 'room': room})
         else:
             # return message if no images are left
             time.sleep(1)

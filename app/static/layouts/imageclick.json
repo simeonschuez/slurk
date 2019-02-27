@@ -199,7 +199,7 @@
     }
   },
   "scripts": {
-    "document-ready": "image-click-functions",
+    "plain": "image-click-functions",
     "submit-message": "send-message",
     "print-history": "plain-history"
   }
