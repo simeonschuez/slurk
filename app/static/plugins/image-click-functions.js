@@ -159,8 +159,8 @@ function logMouseData() {
 
 /* Socket events */
 
-/* actions depending on incoming message */
 socket.on('message', function(data) {
+    /* actions depending on incoming message */
     if (data.user.name == "ImageClick_Main" || data.user.name == "ImageClick_Pretest") {
         console.log("message from image click bot: ", data.msg)
         switch(data.msg) {
@@ -205,6 +205,13 @@ socket.on('attribute_update', function(data) {
         $(".img-button").hide();
     }
   });
+
+socket.on('text_update', function(data) {
+    if (data.id='overlay-textbox') {
+        $('#fullscreen-overlay').show();
+        $('#text-overlay').show();
+    }
+});
 
 // activate mouse tracking
 trackMovement(trackingArea, 10);

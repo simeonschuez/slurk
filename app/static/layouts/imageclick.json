@@ -86,6 +86,23 @@
         ]
     },
     {
+        "layout-type": "div",
+        "id": "text-overlay",
+        "layout-content": [
+            {
+                "layout-type":"div",
+                "id":"overlay-textbox",
+                "layout-content": ""
+            },
+            {
+                "layout-type": "div",
+                "id": "textButton",
+                "class": "button",
+                "layout-content": "&#10004;"
+            }
+        ]
+    },
+    {
       "layout-type": "div",
       "id": "status-box"
     },
@@ -115,6 +132,28 @@
         "top": "0px",
         "left": "0px",
         "display": "none"
+    },
+    "#text-overlay": {
+        "background-color": "white",
+        "min-height": "200px",
+        "min-width": "400px",
+        "height":"70vh",
+        "width":"70vw",
+        "left":"calc(50% - 35vw)",
+        "position":"absolute",
+        "z-index":4,
+        "top":"10vh",
+        "display":"none"
+    },
+    "#overlay-textbox":{
+        "width": "80%",
+        "height":"60%",
+        "left":"10%",
+        "top":"10%",
+        "position":"relative",
+        "text-align":"center",
+        "padding-top":"5%",
+        "font-size":"2em"
     },
     ".button": {
         "height": "40px",
@@ -156,10 +195,13 @@
         "border": "red 1px solid",
         "display": "block"
     },
+    "#textButton": {
+        "left":"calc(50% - 20px)"
+    },
     "#content":{
         "display":"none"
     },
-    "#layout-type-area":{
+    "#type-area":{
         "display":"none !important"
     },
     "#sidebar":{

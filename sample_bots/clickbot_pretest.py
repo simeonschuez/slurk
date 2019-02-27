@@ -14,6 +14,9 @@ chat_namespace = None
 users = {}
 self_id = None
 
+images = 1
+mistakes_allowed = 1
+
 class Game:
 
     def __init__(self):
@@ -38,7 +41,7 @@ class Game:
         with open(self.json_path, "r")  as raw_jfile:
             jfile = json.load(raw_jfile)
             # number of images
-            n = 5
+            n = images
             self.images = {str(i):jfile[str(j)] for i,j in zip(range(n),random.choices(list(range(9)),k=n))}
             self.started, self.pointer = True, 0
 
@@ -113,18 +116,25 @@ class ChatNamespace(BaseNamespace):
             'attribute': "src",
             'value': game.audio_path+game.curr_img['audio_filename']
             })
-#            self.emit('transferFilePath', {'type':'audio','file':game.audio_path+game.curr_img['audio_filename'], 'room': room})
+            
         else:
             # return message if no images are left
             time.sleep(1)
             game.started = False
             print ("mistakes: ",game.mistakes)
-            if game.mistakes <= 5:
+            if game.mistakes <= mistakes_allowed:
                 self.emit("text", {"msg": "start_game", 'room': room})
             else:
                 amt_token = generate_token(14)+"01"
-                self.emit("text", {"msg": "Here's your token: {token}".format(token=amt_token), 'room':room})
-            #self.emit("text", {"msg": "No images left", 'room': room})
+
+                self.emit("set_text", {"id": "overlay-textbox", 'text': "Too many mistakes! Here's your token: {token}".format(token=amt_token), 'room': room})
+
+                self.emit('set_attribute', {
+                'room': room,
+                'id': "current-image",
+                'attribute': "src",
+                'value': ""
+                })
 
     def start_game(self,room):
         """
@@ -136,7 +146,7 @@ class ChatNamespace(BaseNamespace):
             self.emit("text", {"msg": "Game already started!", 'room':room})
             return
         # assign initial values
-        game.get_json("app/static/test_items/")
+        game.get_json("../app/static/test_items/")
         if game.images == False:
             print ("no json files left in directory")
             return

@@ -121,14 +121,13 @@ class ChatNamespace(BaseNamespace):
             game.started = False
 
             amt_token = generate_token(14)+"02"
-            self.emit("text", {"msg": "Here's your token: {token}".format(token=amt_token), 'room': room})
+            self.emit("set_text", {"id": "overlay-textbox", 'text': "Good job! Here's your token: {token}".format(token=amt_token), 'room': room})
 
-            #thank you image
             self.emit('set_attribute', {
             'room': room,
             'id': "current-image",
             'attribute': "src",
-            'value': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/A_Businessman_Holding_A_Thank_You_Sign.svg/202px-A_Businessman_Holding_A_Thank_You_Sign.svg.png'
+            'value': ""
             })
 
     def start_game(self,room):
@@ -141,7 +140,7 @@ class ChatNamespace(BaseNamespace):
             self.emit("text", {"msg": "Game already started!", 'room':room})
             return
         # assign initial values
-        game.get_json("app/static/json/")
+        game.get_json("../app/static/json/")
         if game.images == False:
             print ("no json files left in directory")
             return
