@@ -12,11 +12,12 @@ from time import sleep
 
 parser = argparse.ArgumentParser()
 parser.add_argument('bot', nargs='*', help='path to bot file')
+parser.add_argument('--log', action='store_true', help='log stdout and stderr from bot files')
 args = parser.parse_args()
 
 # get absolute paths for all bot files
 bots = [abspath(bot) for bot in args.bot]
-nullfile = open(os.devnull, "w")
+files = []
 
 # use dirname twice to move to parent directory of current file (i.e. root folder of slurk)
 dir_path = dirname(dirname(realpath(__file__)))
@@ -48,6 +49,7 @@ if __name__ == "__main__":
     processes = []
 
     # start slurk
+    print ('starting server')
     server = subprocess.Popen('python {path}/chat.py'.format(path=dir_path), shell=True)
 
     # add process id to list of running processes
@@ -62,9 +64,19 @@ if __name__ == "__main__":
         os.chdir(bot_dir)
         token = get_bot_token(bot_filename, secret_key)
 
-        print ("starting", i, "\ntoken:", token)
+        if args.log:
+            # write to log file
+            logfile = bot_filename[:-3]+".log"
+        else:
+            # stdout and stderr redirected to /dev/null
+            logfile = os.devnull
 
-        bot_process = subprocess.Popen('python {name} {bot_token}'.format(name=bot_filename, bot_token=token), shell=True, stdout=nullfile, stderr=nullfile)
+        print ("\nstarting", i, "\ntoken:", token)
+        outfile = open(logfile, "w")
+        if outfile not in files:
+            files.append(outfile)
+
+        bot_process = subprocess.Popen('python {name} {bot_token}'.format(name=bot_filename, bot_token=token), shell=True, stdout=outfile, stderr=outfile)
 
         # add process id to list of running processes
         processes.append(bot_process.pid)
@@ -72,15 +84,17 @@ if __name__ == "__main__":
 
     # clean up at exit
     def terminate_processes():
-        """
-        terminate all processes in list of running processes
-        """
+        # terminate all processes in list of running processes
         for process in processes[::-1]:
             os.killpg(os.getpgid(process), signal.SIGTERM)
-        nullfile.close()
+    def close_files():
+        # close files
+        for file in files:
+            file.close()
 
-    # register exit handler
+    # register exit handlers
     atexit.register(terminate_processes)
+    atexit.register(close_files)
 
     # wait for keyboardinterrupt
     signal.pause()
