@@ -134,7 +134,7 @@ class ChatNamespace(BaseNamespace):
         else:
             return
 
-        if len(tasks[task_id]['users']) == tasks[task_id]['task']['users']:
+        if len(tasks[task_id]['users']) == 1:
             tasks[task_id]['rooms'] += 1
             label = tasks[task_id]['task']['name']
             room = label + " " + str(tasks[task_id]['rooms'])
@@ -156,7 +156,7 @@ class ChatNamespace(BaseNamespace):
                                          "name": room,
                                          "label": label.title(),
                                          "users": clients,
-                                         "layout": "meetup_task",
+                                         "layout": "hands",
                                          "hide": []})
             tasks[task_id]['users'].clear()
 

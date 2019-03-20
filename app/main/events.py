@@ -46,6 +46,20 @@ def request_new_image(_name, room, data):
         log({'type': "new_image", 'room': room.id(), 'url': data[0]})
 
 
+@socketio.on('clientStatus', namespace='/chat')
+def client_status(data):
+    """
+    Emit an event 'client_status' containing information about
+    the client (use 'type' to specify what the information is about,
+    'params' to send parameters)
+    """
+    emit('mouse_position', {
+        'type': data.get('type'),
+        'params': data.get('params'),
+        'user': current_user.serialize(),
+        'timestamp': timegm(datetime.now().utctimetuple()),
+    }, room=Room.from_id(data['room']).name())
+
 @socketio.on('mousePosition', namespace='/chat')
 def mouse_position(data):
     """
