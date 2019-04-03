@@ -230,8 +230,8 @@ class ChatNamespace(BaseNamespace):
                 # skip image
                 game.next_image()
                 self.set_image(room)
-            # other buttons: #replayButton, #reportButton, #fullscreenButton
-
+            elif data['element'] in ["#replayButton","#reportButton","#fullscreenButton"]:
+                return
             # if no button was clicked: check if client clicked on target
             elif game.click_on_target(pos):
                 self.emit("text", {"msg": "Correct!", 'room': room})

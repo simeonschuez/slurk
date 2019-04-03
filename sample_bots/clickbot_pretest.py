@@ -14,7 +14,7 @@ chat_namespace = None
 users = {}
 self_id = None
 
-images = 1
+images = 5
 mistakes_allowed = 1
 
 class Game:
@@ -116,7 +116,7 @@ class ChatNamespace(BaseNamespace):
             'attribute': "src",
             'value': game.audio_path+game.curr_img['audio_filename']
             })
-            
+
         else:
             # return message if no images are left
             time.sleep(1)
