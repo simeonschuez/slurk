@@ -205,7 +205,11 @@
         "display":"none !important"
     },
     "#sidebar":{
-        "width":"100%"
+        "width":"100%",
+        "max-width":"100%"
+    },
+    "#sidebar::after": {
+        "display": "none"
     },
     "header":{
         "height": "40px"
