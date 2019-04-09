@@ -1,5 +1,3 @@
-console.log('image_click_functions active')
-
 let gameStarted = false;
 let trackingArea = "#current-image"
 let mouse = {
@@ -16,7 +14,9 @@ let image = document.getElementById("current-image")
 var imgWrapper = document.getElementById('image-wrapper');
 var sidebar = document.getElementById('sidebar');
 
-/* Event listener */
+/*
+    ***Event listener***
+*/
 
 audioDescription.addEventListener("play", function(){emitAudioEvent(audioDescription)}, false);
 audioCorrect.addEventListener("play", function(){emitAudioEvent(audioCorrect)}, false);
@@ -37,10 +37,15 @@ window.addEventListener('touchstart', function() {
       room: self_room});
 });
 
-/* Function definitions */
+/*
+    ***Function definitions***
+*/
 
 function emitAudioEvent(element){
-    /* write log entry if audio file is played */
+    /*
+    write log entry if audio file is played.
+    the audio playback itself is triggered by the event handlers defined above.
+    */
     socket.emit('log', {
         type: "audio_playback",
         data: {
@@ -51,20 +56,26 @@ function emitAudioEvent(element){
 }
 
 function getImageScaleFactor(img) {
-    /* return image scale factor  */
+    /*
+    return image scale factor
+    */
     scaleFactor.x = img.width / img.naturalWidth;
     scaleFactor.y = img.height / img.naturalHeight;
 }
 
 function getPosition (evt, area) {
-    /* assign current mouse position within an area to mouse.pos */
+    /*
+    assign current mouse position within an area to mouse.pos
+    */
     position = $(area).offset();
     mouse.pos.x = (evt.clientX - position.left) / scaleFactor.x;
     mouse.pos.y = (evt.clientY - position.top) / scaleFactor.y;
 }
 
 function storePosition(a, intrvl) {
-    /* add the current mouse position to the array mousePositions */
+    /*
+    add the current mouse position to the mousePositions array
+    */
     if (mouse.move) {
         mousePositions.push({
             timestamp:Date.now(),
@@ -76,8 +87,10 @@ function storePosition(a, intrvl) {
 }
 
 function trackMovement(area,interval) {
-    /* get cursor position on movement within a defined area
-    and store positions in a defined interval */
+    /*
+    retrieve and store cursor position on movement within a defined area
+    in a defined interval
+    */
     $(area).mousemove(function(e){
         getPosition(e, area);
         mouse.move = true;
@@ -86,12 +99,16 @@ function trackMovement(area,interval) {
 }
 
 function centerImage() {
-    /* horizontally center image */
+    /*
+    horizontally center image
+    */
     imgWrapper.style.left = ((sidebar.offsetWidth/2)-(imgWrapper.offsetWidth/2));
 }
 
 function enterFullscreen(element) {
-    /* request fullscreen mode */
+    /*
+    request fullscreen mode
+    */
     if(element.requestFullscreen) {
         element.requestFullscreen();
         // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
@@ -105,7 +122,9 @@ function enterFullscreen(element) {
 }
 
 function closeFullscreen() {
-    /* disable fullscreen mode */
+    /*
+    disable fullscreen mode
+    */
     if (document.exitFullscreen) {
         document.exitFullscreen();
         // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
@@ -119,7 +138,9 @@ function closeFullscreen() {
 }
 
 function fullscreenStatus(){
-    /* return true if browser is in fullscreen mode */
+    /*
+    return true if browser is in fullscreen mode
+    */
     if (
         document.fullscreenElement ||
         // cross browser compatibility for Firefox; Chrome/Safari/Opera; IE/Edge
@@ -134,7 +155,9 @@ function fullscreenStatus(){
 }
 
 function fullscreenChange () {
-    /* display overlay if user disables fullscreen mode and game has started */
+    /*
+    display overlay if user disables fullscreen mode and game has started
+    */
     if (gameStarted == true) {
         if (fullscreenStatus() == true) {
             console.log("fullscreen enabled")
@@ -148,8 +171,10 @@ function fullscreenChange () {
 }
 
 function logMouseData() {
-    /* dispay image overlay and emit all mouse positions collected
-    for the current image */
+    /*
+    dispay image overlay and emit all mouse positions collected
+    for the current image
+    */
     $("#image-overlay").fadeIn(200);
     $(".img-button").fadeOut(200);
     console.log("logging tracking data");
@@ -157,10 +182,15 @@ function logMouseData() {
     mousePositions = [];
 }
 
-/* Socket events */
+/*
+    ***Socket events***
+*/
 
 socket.on('message', function(data) {
-    /* actions depending on incoming message */
+    /*
+    actions triggered by room messages sent by game bot
+    action depend on message text
+    */
     if (data.user.name == "ImageClick_Main" || data.user.name == "ImageClick_Pretest") {
         console.log("message from image click bot: ", data.msg)
         switch(data.msg) {
@@ -197,61 +227,32 @@ socket.on('message', function(data) {
 });
 
 socket.on('attribute_update', function(data) {
-    //set_image(data['url']);
+    /*
+        if new audio & image urls are sent by the bot:
+        show image overlay and hide replay & report buttons
+    */
     console.log("new image:",data,"Game started:",gameStarted)
     if (gameStarted==true && data.id == 'audio-description') {
-        /* show overlay and hide replayButton if new image is recieved */
         $(".overlay").show();
         $(".img-button").hide();
     }
   });
 
 socket.on('text_update', function(data) {
+    /*
+        if content of overlay-textbox is updated by the bot:
+        show overlays and text box
+    */
     if (data.id='overlay-textbox') {
         $('#fullscreen-overlay').show();
         $('#text-overlay').show();
     }
 });
 
-// activate mouse tracking
-trackMovement(trackingArea, 10);
+/*
+    ***button actions***
+*/
 
-/* add preload and type attributes to audio elements */
-$(".audio").attr({
-  preload:"auto",
-  type:"audio/wav"
-});
-
-// center image if new image is loaded or window is resized
-image.onload = function () {
-    getImageScaleFactor(image);
-    centerImage();
-}
-window.onresize = function () {
-    getImageScaleFactor(image);
-    centerImage();
-};
-
-/* send coordinates on click */
-$("#current-image").click(function(e){
-    getPosition(e, "#current-image");
-    socket.emit('mousePosition', {
-        type:'click',
-        element:"#current-image",
-        coordinates:mouse.pos,
-        room: self_room
-    });
-    socket.emit('log', {
-        type: "mouse_click",
-        data: {
-            timestamp:Date.now(),
-            coordinates:mouse.pos,
-            element:"#current-image"
-        },
-        room: self_room});
-});
-
-/* if button is clicked: emit event and log */
 $('.button').click(function(e){
     /* assign coordinates of the button's center point to mouse.pos and emit events*/
     getPosition(e, trackingArea)
@@ -328,3 +329,45 @@ $('.button').click(function(e){
             break;
     }
 });
+
+/*
+    ***other events & initial setup***
+*/
+
+// activate mouse tracking
+trackMovement(trackingArea, 10);
+
+// add preload and type attributes to audio elements
+$(".audio").attr({
+    preload:"auto",
+    type:"audio/wav"
+});
+
+// center image if new image is loaded or window is resized
+image.onload = function () {
+    getImageScaleFactor(image);
+    centerImage();
+}
+window.onresize = function () {
+    getImageScaleFactor(image);
+    centerImage();
+};
+
+// emit mousePosition event and log position if user clicks on the image
+$("#current-image").click(function(e){
+    getPosition(e, "#current-image");
+    socket.emit('mousePosition', {
+        type:'click',
+        element:"#current-image",
+        coordinates:mouse.pos,
+        room: self_room
+    });
+    socket.emit('log', {
+        type: "mouse_click",
+        data: {
+            timestamp:Date.now(),
+            coordinates:mouse.pos,
+            element:"#current-image"
+        },
+        room: self_room});
+    });

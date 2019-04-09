@@ -244,6 +244,7 @@ class ChatNamespace(BaseNamespace):
                 if game.image_mistakes >= 5:
                     self.emit("text", {"msg": "Skipping Image", 'room': room})
                     game.next_image()
+                    self.set_image(room)
 
 
 class LoginNamespace(BaseNamespace):
