@@ -141,12 +141,17 @@ class ChatNamespace(BaseNamespace):
         prepare & start game:
         import json files, set first image, send audio files to client
         """
+        # navigate to main slurk directory
+        file_dir_path = os.path.dirname(os.path.realpath(__file__))
+        slurk_path = os.path.abspath(os.path.join(file_dir_path, os.pardir))
+        os.chdir(slurk_path)
+
         # check if game was already started
         if game.started == True:
             self.emit("text", {"msg": "Game already started!", 'room':room})
             return
         # assign initial values
-        game.get_json("../app/static/test_items/")
+        game.get_json("app/static/test_items/")
         if game.images == False:
             print ("no json files left in directory")
             return
